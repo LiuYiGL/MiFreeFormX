@@ -2,6 +2,7 @@ package org.liuyi.mzfreeform.activity
 
 import android.os.Bundle
 import cn.fkj233.ui.activity.MIUIActivity
+import org.liuyi.mzfreeform.page.LightOpen
 import org.liuyi.mzfreeform.page.MainPage
 
 /**
@@ -13,6 +14,7 @@ class MainActivity : MIUIActivity() {
 
     init {
         registerPage(MainPage::class.java)
+        registerPage(LightOpen::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
