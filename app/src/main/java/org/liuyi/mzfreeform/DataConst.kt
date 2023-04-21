@@ -29,6 +29,11 @@ object DataConst {
     val FORCE_CONTROL_ALL_OPEN = PrefsData("force_control_all_open", false)
 
     /**
+     * 解除小窗展开通知限制
+     */
+    val NOTIFY_LIMIT_REMOVE_SMALL_WINDOW = PrefsData("notify_limit_remove_small_window", false)
+
+    /**
      * 禁用小窗黑名单
      */
     val DISABLE_FREEFORM_BLACKLIST = PrefsData("disable_freeform_blacklist", false)

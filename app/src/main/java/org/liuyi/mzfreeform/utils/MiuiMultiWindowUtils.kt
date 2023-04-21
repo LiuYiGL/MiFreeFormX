@@ -7,6 +7,7 @@ import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
 import com.highcapable.yukihookapi.hook.type.android.ContextClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanClass
+import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
 import org.liuyi.mzfreeform.xposed.hooker.AndroidHooker.toClass
 
@@ -43,8 +44,8 @@ object MiuiMultiWindowUtils {
             activityOptions = "android.util.MiuiMultiWindowUtils".toClass().method {
                 name = "getActivityOptions"
                 // _, 包名, noCheck, isMiniFreeformMode
-                param(ContextClass, StringClass, BooleanClass, BooleanClass)
-            }.get().call(context, packageName, true, false) as ActivityOptions?
+                param(ContextClass, StringClass, BooleanType, BooleanType)
+            }.get().call(context, packageName, false, false) as ActivityOptions?
         } catch (e: Exception) {
             loggerD(msg = "MiuiMultiWindowUtils getActivityOptions error")
         }

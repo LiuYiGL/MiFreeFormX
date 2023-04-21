@@ -3,19 +3,15 @@ package org.liuyi.mzfreeform.xposed.hooker
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.os.Bundle
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
-import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.type.android.ActivityInfoClass
+import com.highcapable.yukihookapi.hook.type.android.ActivityManagerClass
 import org.liuyi.mzfreeform.DataConst
-import org.liuyi.mzfreeform.utils.ActivityOptionsUtils
 import org.liuyi.mzfreeform.utils.MiuiMultiWindowUtils
-import org.liuyi.mzfreeform.utils.setLaunchWindowingModeExt
 
 /**
  * @Author: Liuyi
@@ -23,6 +19,10 @@ import org.liuyi.mzfreeform.utils.setLaunchWindowingModeExt
  * @Description: 可用作状态栏上的各种小窗打开，点击通知、长按快捷方式
  */
 object SystemUiHooker : YukiBaseHooker() {
+
+    private const val KEY_LAUNCH_WINDOWING_MODE = "android.activity.windowingMode"
+    private const val KEY_LAUNCH_BOUNDS = "android:activity.launchBounds"
+    private const val EXTRA_USER_HANDLE = "android.intent.extra.user_handle"
 
     override fun onHook() {
         var context: Context? = null
@@ -56,15 +56,11 @@ object SystemUiHooker : YukiBaseHooker() {
                 afterHook {
                     if (!nextIsMod) return@afterHook
                     nextIsMod = false
-                    context?.let {
-                        runCatching {
+                    result<Bundle>()?.apply {
+                        putInt(KEY_LAUNCH_WINDOWING_MODE, 5)
+                        context?.let {
                             val rect = MiuiMultiWindowUtils.getFreeformRect(it)
-                            val activityOptions = ActivityOptionsUtils.constructor(result as Bundle)
-                            activityOptions.launchBounds = rect
-                            activityOptions.setLaunchWindowingModeExt(5)
-                            result = activityOptions.toBundle()
-                        }.exceptionOrNull()?.let {
-                            loggerE(e = it)
+                            putParcelable(KEY_LAUNCH_BOUNDS, rect)
                         }
                     }
                 }
@@ -86,6 +82,7 @@ object SystemUiHooker : YukiBaseHooker() {
                 }
                 beforeHook {
                     (args[0] as Intent).apply {
+                        loggerD(msg = "intent: $this")
                         nextIsMod = nextIsModByIntent(context, this)
                     }
                 }
@@ -105,20 +102,80 @@ object SystemUiHooker : YukiBaseHooker() {
             }
         }.by { prefs.get(DataConst.OPEN_NOTICE) }
 
+
+        /**
+         * 解除小窗展开通知限制
+         */
+        "com.android.systemui.statusbar.notification.NotificationSettingsManager".hook {
+            injectMember {
+                method { name("canSlide") }
+                replaceToTrue()
+            }
+        }.by { prefs.get(DataConst.NOTIFY_LIMIT_REMOVE_SMALL_WINDOW) }
+
+        /**
+         * Hook com.android.systemui.statusbar.notification.policy.MiniWindowPolicy#isTopSamePackage
+         * Intent
+         * ComponentName
+         * 优化 前台应用判断逻辑
+         */
+        "com.android.systemui.statusbar.notification.policy.MiniWindowPolicy".hook {
+            injectMember {
+                method { name("isTopSamePackage") }
+                afterHook {
+                    if (result == true) {
+                        val intent = args[0] as Intent?
+                        val currentUid =
+                            ActivityManagerClass.method { name("getCurrentUser") }.get()
+                                .invoke<Int>()
+                        val targetUid = intent?.getIntExtra(EXTRA_USER_HANDLE, -1)
+                        loggerD(msg = "当前用户id：$currentUid")
+                        loggerD(msg = "目标用户id：$targetUid")
+                        if (currentUid == null && targetUid == null) {
+                            return@afterHook
+                        }
+                        if (currentUid != targetUid) {
+                            result = false
+                        }
+                    }
+                }
+            }
+            injectMember {
+                method { name("isTopSameClass") }
+                afterHook {
+                    if (result == true) {
+                        val intent = args[0] as Intent?
+                        val currentUid =
+                            ActivityManagerClass.method { name("getCurrentUser") }.get()
+                                .invoke<Int>()
+                        val targetUid = intent?.getIntExtra(EXTRA_USER_HANDLE, -1)
+                        loggerD(msg = "当前用户id：$currentUid")
+                        loggerD(msg = "目标用户id：$targetUid")
+                        if (currentUid == null && targetUid == null) {
+                            return@afterHook
+                        }
+                        if (currentUid != targetUid) {
+                            result = false
+                        }
+                    }
+                }
+            }
+        }.by { false }
     }
 
+    /**
+     * 通过Intent 判断是否需要使用小窗打开
+     *
+     * @param context
+     * @param intent
+     * @return
+     */
     private fun nextIsModByIntent(context: Context? = null, intent: Intent?): Boolean {
         var isMod = false
         if (prefs.get(DataConst.FORCE_CONTROL_ALL_OPEN)) {
             return true
         }
         intent?.run {
-            loggerD(msg = "intent: $intent")
-//            context?.packageManager?.let {
-//                val activities = it.queryIntentActivities(this, PackageManager.MATCH_ALL)
-//                activities.for
-//            }
-
             intent.action?.let {
                 isMod = when (it) {
                     "android.settings.SETTINGS" -> false
@@ -133,6 +190,10 @@ object SystemUiHooker : YukiBaseHooker() {
                     "com.android.phone" -> true
                     else -> false
                 }
+                if (isMod) return@run
+            }
+            intent.`package`?.let {
+                isMod = it.startsWith("com.android")
             }
         }
         return isMod
