@@ -15,7 +15,7 @@ android {
         minSdk 29
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName getSelfDefinedVersion("name")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -52,4 +52,23 @@ dependencies {
     compileOnly 'de.robv.android.xposed:api:82'
     // ❗作为 Xposed 模块使用务必添加，其它情况可选
     ksp 'com.highcapable.yukihookapi:ksp-xposed:1.1.9'
+
+    // https://mvnrepository.com/artifact/com.github.kyuubiran/EzXHelper
+    implementation 'com.github.kyuubiran:EzXHelper:2.0.0'
+}
+static def getSelfDefinedVersion(type) {
+    int aa = 1
+    int bb = 0
+    Process process = "git rev-list --count HEAD".execute()
+    process.waitFor()
+
+    if ("code" == type) {
+        aa * 100 + bb
+    } else if ("name" == type) {
+        String today = new Date().format("yyMMddHHmmss")
+        process = "git describe --always".execute()
+        process.waitFor()
+        String sha1 = process.getText().trim()
+        "$aa.$bb.$today.$sha1"
+    }
 }

@@ -18,7 +18,6 @@ class MainActivity : MIUIActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        setSP(getPreferences(MODE_PRIVATE))
         super.onCreate(savedInstanceState)
     }
 }
