@@ -8,8 +8,7 @@ import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import org.liuyi.mzfreeform.BuildConfig
 import org.liuyi.mzfreeform.DataConst
-import org.liuyi.mzfreeform.xposed.hooker.AndroidHooker
-import org.liuyi.mzfreeform.xposed.hooker.SystemUiHooker
+import org.liuyi.mzfreeform.xposed.hooker.*
 
 /**
  * @Author: Liuyi
@@ -25,6 +24,7 @@ object HookEntry : IYukiHookXposedInit {
             debugLog {
                 tag = "MzFreeForm"
             }
+            isEnableHookSharedPreferences = true
         }
     }
 
@@ -35,7 +35,8 @@ object HookEntry : IYukiHookXposedInit {
             loggerW(msg = "模块已关闭")
         } else {
             loggerI(msg = "Starting Hook！！")
-            loadSystem(AndroidHooker)
+            loadSystem(FrameworkEnhanceHooker)
+            loadSystem(FrameworkBaseHooker)
             loadApp("com.android.systemui", SystemUiHooker)
         }
     }

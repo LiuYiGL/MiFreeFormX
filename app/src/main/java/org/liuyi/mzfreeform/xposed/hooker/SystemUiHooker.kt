@@ -1,5 +1,7 @@
 package org.liuyi.mzfreeform.xposed.hooker
 
+import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -8,10 +10,14 @@ import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
+import com.highcapable.yukihookapi.hook.log.loggerE
 import com.highcapable.yukihookapi.hook.type.android.ActivityInfoClass
 import com.highcapable.yukihookapi.hook.type.android.ActivityManagerClass
 import org.liuyi.mzfreeform.DataConst
-import org.liuyi.mzfreeform.utils.MiuiMultiWindowUtils
+import org.liuyi.mzfreeform.intent_extra.FreeFormIntent
+import org.liuyi.mzfreeform.intent_extra.forceFreeFromMode
+import org.liuyi.mzfreeform.utils.*
+import kotlin.math.log
 
 /**
  * @Author: Liuyi
@@ -20,14 +26,14 @@ import org.liuyi.mzfreeform.utils.MiuiMultiWindowUtils
  */
 object SystemUiHooker : YukiBaseHooker() {
 
-    private const val KEY_LAUNCH_WINDOWING_MODE = "android.activity.windowingMode"
-    private const val KEY_LAUNCH_BOUNDS = "android:activity.launchBounds"
-    private const val EXTRA_USER_HANDLE = "android.intent.extra.user_handle"
-
+    @SuppressLint("QueryPermissionsNeeded")
     override fun onHook() {
         var context: Context? = null
 
-        var nextIsMod = false
+        val CommonUtilClass = "com.miui.systemui.util.CommonUtil".toClass()
+        val getTopActivity: () -> ComponentName? = {
+            CommonUtilClass.method { name("getTopActivity") }.get().invoke<ComponentName>()
+        }
 
         /**
          * Hook com.android.systemui.CoreStartable 构造器获取 Context
@@ -41,32 +47,6 @@ object SystemUiHooker : YukiBaseHooker() {
                 }
             }
         }
-
-        /**
-         * Hook com.android.systemui.statusbar.phone.CentralSurfaces#getActivityOptions(int, RemoteAnimationAdapter)
-         *
-         * 替换Bundle
-         */
-        "com.android.systemui.statusbar.phone.CentralSurfaces".hook {
-            injectMember(tag = "CentralSurfaces#getActivityOptions(int, RemoteAnimationAdapter)") {
-                method {
-                    name("getActivityOptions")
-                    paramCount(2)
-                }
-                afterHook {
-                    if (!nextIsMod) return@afterHook
-                    nextIsMod = false
-                    result<Bundle>()?.apply {
-                        putInt(KEY_LAUNCH_WINDOWING_MODE, 5)
-                        context?.let {
-                            val rect = MiuiMultiWindowUtils.getFreeformRect(it)
-                            putParcelable(KEY_LAUNCH_BOUNDS, rect)
-                        }
-                    }
-                }
-            }
-        }.by { prefs.get(DataConst.LONG_PRESS_TILE) || prefs.get(DataConst.OPEN_NOTICE) }
-
         /**
          * Hook com.android.systemui.statusbar.phone.CentralSurfacesImpl#startActivityDismissingKeyguard
          * (android.content.Intent, boolean, boolean, boolean, com.android.systemui.plugins.ActivityStarter.Callback,
@@ -81,13 +61,32 @@ object SystemUiHooker : YukiBaseHooker() {
                     paramCount(8)
                 }
                 beforeHook {
-                    (args[0] as Intent).apply {
-                        loggerD(msg = "intent: $this")
-                        nextIsMod = nextIsModByIntent(context, this)
+                    by(this, DataConst.LONG_PRESS_TILE) {
+                        (args[0] as Intent?)?.apply {
+                            loggerD(msg = "intent: $this")
+
+                            kotlin.runCatching {
+                                val topActivity = getTopActivity()
+                                val componentName: ComponentName? =
+                                    resolveActivity(context!!.packageManager)
+                                loggerD(msg = "$topActivity and $componentName")
+                                requireNotNull(topActivity)
+                                requireNotNull(componentName)
+                                if (componentName.packageName == topActivity.packageName) {
+                                    return@by
+                                }
+                            }.exceptionOrNull()?.let { loggerE(e = it) }
+
+                            if (prefs.direct().get(DataConst.FORCE_CONTROL_ALL_OPEN)) {
+                                forceFreeFromMode()
+                                return@by
+                            }
+                            customIntent(this)
+                        }
                     }
                 }
             }
-        }.by { prefs.get(DataConst.LONG_PRESS_TILE) }
+        }
 
         /**
          * Hook com.android.systemui.statusbar.phone.MiuiStatusBarNotificationActivityStarter#startNotificationIntent
@@ -97,10 +96,14 @@ object SystemUiHooker : YukiBaseHooker() {
             injectMember {
                 method { name("startNotificationIntent") }
                 beforeHook {
-                    nextIsMod = true
+                    loggerD(msg = "${this.args.asList()}")
+                    by(this, DataConst.OPEN_NOTICE) {
+                        args[1] = args[1] ?: Intent()
+                        (args[1] as Intent?)?.forceFreeFromMode()
+                    }
                 }
             }
-        }.by { prefs.get(DataConst.OPEN_NOTICE) }
+        }
 
 
         /**
@@ -109,58 +112,29 @@ object SystemUiHooker : YukiBaseHooker() {
         "com.android.systemui.statusbar.notification.NotificationSettingsManager".hook {
             injectMember {
                 method { name("canSlide") }
-                replaceToTrue()
+                beforeHook {
+                    by(this, DataConst.NOTIFY_LIMIT_REMOVE_SMALL_WINDOW) {
+                        resultTrue()
+                    }
+                }
             }
-        }.by { prefs.get(DataConst.NOTIFY_LIMIT_REMOVE_SMALL_WINDOW) }
+        }
 
         /**
-         * Hook com.android.systemui.statusbar.notification.policy.MiniWindowPolicy#isTopSamePackage
-         * Intent
-         * ComponentName
-         * 优化 前台应用判断逻辑
+         * 解除小窗展开通知限制
+         * Hook com.android.systemui.statusbar.notification.policy.AppMiniWindowManager#canNotificationSlide
          */
-        "com.android.systemui.statusbar.notification.policy.MiniWindowPolicy".hook {
+        "com.android.systemui.statusbar.notification.policy.AppMiniWindowManager".hook {
             injectMember {
-                method { name("isTopSamePackage") }
-                afterHook {
-                    if (result == true) {
-                        val intent = args[0] as Intent?
-                        val currentUid =
-                            ActivityManagerClass.method { name("getCurrentUser") }.get()
-                                .invoke<Int>()
-                        val targetUid = intent?.getIntExtra(EXTRA_USER_HANDLE, -1)
-                        loggerD(msg = "当前用户id：$currentUid")
-                        loggerD(msg = "目标用户id：$targetUid")
-                        if (currentUid == null && targetUid == null) {
-                            return@afterHook
-                        }
-                        if (currentUid != targetUid) {
-                            result = false
-                        }
+                method { name("canNotificationSlide") }
+                beforeHook {
+                    by(this, DataConst.NOTIFY_LIMIT_REMOVE_SMALL_WINDOW) {
+                        resultTrue()
                     }
                 }
             }
-            injectMember {
-                method { name("isTopSameClass") }
-                afterHook {
-                    if (result == true) {
-                        val intent = args[0] as Intent?
-                        val currentUid =
-                            ActivityManagerClass.method { name("getCurrentUser") }.get()
-                                .invoke<Int>()
-                        val targetUid = intent?.getIntExtra(EXTRA_USER_HANDLE, -1)
-                        loggerD(msg = "当前用户id：$currentUid")
-                        loggerD(msg = "目标用户id：$targetUid")
-                        if (currentUid == null && targetUid == null) {
-                            return@afterHook
-                        }
-                        if (currentUid != targetUid) {
-                            result = false
-                        }
-                    }
-                }
-            }
-        }.by { false }
+        }
+
     }
 
     /**
@@ -170,39 +144,28 @@ object SystemUiHooker : YukiBaseHooker() {
      * @param intent
      * @return
      */
-    private fun nextIsModByIntent(context: Context? = null, intent: Intent?): Boolean {
-        var isMod = false
-        if (prefs.get(DataConst.FORCE_CONTROL_ALL_OPEN)) {
-            return true
-        }
-        intent?.run {
-            intent.action?.let {
-                isMod = when (it) {
-                    "android.settings.SETTINGS" -> false
-                    "android.service.quicksettings.action.QS_TILE_PREFERENCES" -> true
-                    else -> it.startsWith("android.settings")
-                }
-                if (isMod) return@run
+    private fun customIntent(intent: Intent?) {
+        intent?.apply {
+            if (prefs.direct().get(DataConst.FORCE_CONTROL_ALL_OPEN)) {
+                forceFreeFromMode()
+                return
             }
-            intent.component?.let {
-                isMod = when (it.packageName) {
-                    "com.android.settings" -> true
-                    "com.android.phone" -> true
-                    else -> false
+            action?.let {
+                when {
+                    it == "android.service.quicksettings.action.QS_TILE_PREFERENCES" -> forceFreeFromMode()
+                    it.startsWith("android.settings") && it != "android.settings.SETTINGS" -> forceFreeFromMode()
                 }
-                if (isMod) return@run
+                return
             }
-            intent.`package`?.let {
-                isMod = it.startsWith("com.android")
+            component?.let {
+                when (it.packageName) {
+                    "com.android.settings", "com.android.phone" -> forceFreeFromMode()
+                }
+                return
+            }
+            `package`?.let {
+                if (it.startsWith("com.android")) forceFreeFromMode()
             }
         }
-        return isMod
     }
-
-}
-
-fun ActivityInfo.isResizeableModeExt(): Boolean {
-    val mode = ActivityInfoClass.field { name("resizeMode") }.get(this).int()
-    return ActivityInfoClass.method { name("isResizeableMode") }.get().invoke<Boolean>(mode)
-        ?: false
 }

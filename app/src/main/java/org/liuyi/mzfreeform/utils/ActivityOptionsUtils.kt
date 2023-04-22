@@ -24,3 +24,5 @@ fun ActivityOptions.setLaunchWindowingModeExt(mode: Int) =
     ActivityOptions::class.java.method {
         name("setLaunchWindowingMode")
     }.get(this).call(mode)
+
+fun getBasicBundle() = ActivityOptions.makeBasic().toBundle() as Bundle?

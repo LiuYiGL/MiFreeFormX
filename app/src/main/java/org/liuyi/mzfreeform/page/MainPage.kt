@@ -32,11 +32,25 @@ class MainPage : BasePage() {
         )
 
 
+        TextSummaryWithSwitch(
+            TextSummaryV("应用间跳转", tips = "应用间跳转时使用小窗打开"),
+            createSwitchV(DataConst.APP_JUMP)
+        )
+
+
         Line()
         TitleText(text = "增强")
         TextWithSwitch(
             TextV("禁用小窗黑名单"),
             createSwitchV(DataConst.DISABLE_FREEFORM_BLACKLIST)
+        )
+        TextWithSwitch(
+            TextV("禁用多小窗间的位置偏移"),
+            createSwitchV(DataConst.DISABLE_MULTI_OFFSET)
+        )
+        TextWithSwitch(
+            TextV("解除小窗数量限制"),
+            createSwitchV(DataConst.CANCEL_MULTI_WINDOW_LIMIT)
         )
     }
 

@@ -6,10 +6,9 @@ import android.graphics.Rect
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
 import com.highcapable.yukihookapi.hook.type.android.ContextClass
-import com.highcapable.yukihookapi.hook.type.java.BooleanClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
-import org.liuyi.mzfreeform.xposed.hooker.AndroidHooker.toClass
+import org.liuyi.mzfreeform.xposed.hooker.FrameworkEnhanceHooker.toClass
 
 /**
  * @Author: Liuyi
@@ -57,4 +56,6 @@ object MiuiMultiWindowUtils {
         }
         return activityOptions
     }
+
+
 }

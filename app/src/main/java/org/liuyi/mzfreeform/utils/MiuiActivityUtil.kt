@@ -24,4 +24,6 @@ class MiuiActivityUtil {
         miuiActivityUtilClass.method { name("getTopActivity") }.get(getInstance())
             .invoke<ComponentName>()
 
+
+
 }
