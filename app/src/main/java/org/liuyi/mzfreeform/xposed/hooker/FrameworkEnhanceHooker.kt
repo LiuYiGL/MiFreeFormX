@@ -1,9 +1,7 @@
 package org.liuyi.mzfreeform.xposed.hooker
 
+import android.content.Intent
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.method
-import com.highcapable.yukihookapi.hook.log.loggerD
-import com.highcapable.yukihookapi.hook.type.android.ActivityThreadClass
 import org.liuyi.mzfreeform.DataConst
 import org.liuyi.mzfreeform.utils.by
 import org.liuyi.mzfreeform.utils.byAny
@@ -89,6 +87,21 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
                 }
             }
         }
+
+        // 修复打开小窗应用触发二次确认时会缩小当前应用的Bug miui.security.SecurityManager#buildStartIntent
+        // Bug 普遍存在与应用间跳转
+        "miui.security.SecurityManager".hook {
+            // buildStartIntent miui 会执行改方法构建 手机管家的二次确认intent
+            injectMember {
+                method { name("buildStartIntent") }
+                afterHook {
+                    by(this, DataConst.FIX_START_SMALL_WINDOW_CONFIRM) {
+                        result<Intent>()?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                }
+            }
+        }
+
     }
 }
 

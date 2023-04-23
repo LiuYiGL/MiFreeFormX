@@ -5,6 +5,7 @@ import cn.fkj233.ui.activity.MIUIActivity
 import org.liuyi.mzfreeform.page.LightOpen
 import org.liuyi.mzfreeform.page.MainPage
 import org.liuyi.mzfreeform.page.NotificationAndControlCenterPage
+import org.liuyi.mzfreeform.page.ShareToAppPage
 
 /**
  * @Author: Liuyi
@@ -17,6 +18,7 @@ class MainActivity : MIUIActivity() {
         registerPage(MainPage::class.java)
         registerPage(LightOpen::class.java)
         registerPage(NotificationAndControlCenterPage::class.java)
+        registerPage(ShareToAppPage::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

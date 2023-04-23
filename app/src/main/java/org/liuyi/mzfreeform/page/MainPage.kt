@@ -21,10 +21,11 @@ class MainPage : BasePage() {
     override fun onCreate() {
 
         TextWithSwitch(
-            TextV("总开关"),
+            TextV("模块总开关"),
             createSwitchV(DataConst.MAIN_SWITCH)
         )
         Line()
+        TitleText(text = "功能")
         TextSummaryWithArrow(
             TextSummaryV("通知和控制中心") {
                 showFragment("NotificationAndControlCenterPage")
@@ -35,6 +36,12 @@ class MainPage : BasePage() {
         TextSummaryWithSwitch(
             TextSummaryV("应用间跳转", tips = "应用间跳转时使用小窗打开"),
             createSwitchV(DataConst.APP_JUMP)
+        )
+
+        TextSummaryWithArrow(
+            TextSummaryV("通知和控制中心") {
+                showFragment("ShareToAppPage")
+            }
         )
 
 
@@ -51,6 +58,10 @@ class MainPage : BasePage() {
         TextWithSwitch(
             TextV("解除小窗数量限制"),
             createSwitchV(DataConst.CANCEL_MULTI_WINDOW_LIMIT)
+        )
+        TextSummaryWithSwitch(
+            TextSummaryV("禁用启动应用确认时缩放当前应用", tips = "修复打开小窗应用触发二次确认时会缩小当前应用的Bug"),
+            createSwitchV(DataConst.FIX_START_SMALL_WINDOW_CONFIRM)
         )
     }
 

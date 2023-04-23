@@ -39,6 +39,16 @@ object DataConst {
     val APP_JUMP = PrefsData("app_jump", false)
 
     /**
+     * 分享至应用
+     */
+    val SHARE_TO_APP = PrefsData("share_to_app", false)
+
+    /**
+     * 分享时强制使用新窗口打开
+     */
+    val SHARE_TO_APP_FORCE_NEW_TASK = PrefsData("share_to_app_force_new_task", false)
+
+    /**
      * 禁用小窗黑名单
      */
     val DISABLE_FREEFORM_BLACKLIST = PrefsData("disable_freeform_blacklist", false)
@@ -55,4 +65,9 @@ object DataConst {
 
     // 解除小窗数量限制
     val CANCEL_MULTI_WINDOW_LIMIT = PrefsData("cancel_multi_window_limit", false)
+
+    /**
+     * 修复小窗启动应用确认 修复打开小窗应用触发二次确认时会缩小当前应用的Bug
+     */
+    val FIX_START_SMALL_WINDOW_CONFIRM = PrefsData("fix_start_small_window_confirm", false)
 }
