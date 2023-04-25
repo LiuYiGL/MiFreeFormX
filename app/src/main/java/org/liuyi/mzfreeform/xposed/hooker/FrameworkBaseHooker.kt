@@ -73,21 +73,23 @@ object FrameworkBaseHooker : YukiBaseHooker() {
     // 应用间分享
     private fun isShareToApp(callingPackage: String?, intent: Intent?): Boolean {
         val res: Boolean = when {
-            intent?.action == Intent.ACTION_SEND && callingPackage != intent.`package` -> true
+            intent?.`package` == callingPackage -> false
+            intent?.action == Intent.ACTION_SEND -> true
+            intent?.component != null ->
+                intent.component?.let {
+                    when (it.packageName) {
+                        callingPackage -> false
+                        "com.miui.packageinstaller" -> it.className == "com.miui.packageInstaller.NewPackageInstallerActivity"
+                        "com.tencent.mm" -> it.className.contains(".plugin.base.stub.WXEntryActivity")
+                        else -> false
+                    }
+                } ?: false
             intent?.clipData != null -> true
             intent?.data != null -> true
-            intent?.component?.let {
-                when (it.packageName) {
-                    "com.miui.packageinstaller" -> it.className == "com.miui.packageInstaller.NewPackageInstallerActivity"
-                    "com.tencent.mm" -> it.className.contains(".plugin.base.stub.WXEntryActivity")
-
-                    else -> false
-                }
-            } ?: false -> true
             else -> false
         }
         // 强制添加 new task 标签
-        if (prefs.direct().get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
+        if (res && prefs.direct().get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
             intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         return res
