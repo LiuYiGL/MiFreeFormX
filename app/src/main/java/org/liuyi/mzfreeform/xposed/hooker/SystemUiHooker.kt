@@ -4,20 +4,13 @@ import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ActivityInfo
-import android.os.Bundle
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
 import com.highcapable.yukihookapi.hook.log.loggerE
-import com.highcapable.yukihookapi.hook.type.android.ActivityInfoClass
-import com.highcapable.yukihookapi.hook.type.android.ActivityManagerClass
 import org.liuyi.mzfreeform.DataConst
-import org.liuyi.mzfreeform.intent_extra.FreeFormIntent
 import org.liuyi.mzfreeform.intent_extra.forceFreeFromMode
 import org.liuyi.mzfreeform.utils.*
-import kotlin.math.log
 
 /**
  * @Author: Liuyi
@@ -133,14 +126,13 @@ object SystemUiHooker : YukiBaseHooker() {
                     }
                 }
             }
-        }
+        }.by { false }
 
     }
 
     /**
      * 通过Intent 判断是否需要使用小窗打开
      *
-     * @param context
      * @param intent
      * @return
      */
