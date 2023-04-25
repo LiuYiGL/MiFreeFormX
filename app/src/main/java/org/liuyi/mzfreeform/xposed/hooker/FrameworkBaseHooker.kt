@@ -99,15 +99,6 @@ object FrameworkBaseHooker : YukiBaseHooker() {
     override fun onHook() {
 
         "com.android.server.wm.ActivityTaskManagerService".hook {
-//            injectMember {
-//                members(
-//                    *instanceClass.method { name { it.startsWith("start") } }.giveAll()
-//                        .toTypedArray()
-//                )
-//                beforeHook {
-//                    loggerD(msg = "${this.args.asList()}")
-//                }
-//            }
             /**
              * 用户应用调用会来到这里
              */
