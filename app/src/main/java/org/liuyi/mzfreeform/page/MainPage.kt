@@ -25,7 +25,7 @@ class MainPage : BasePage() {
             createSwitchV(DataConst.MAIN_SWITCH)
         )
         Line()
-        TitleText(text = "功能")
+        TitleText(text = "辅助功能")
         TextSummaryWithArrow(
             TextSummaryV("通知和控制中心") {
                 showFragment("NotificationAndControlCenterPage")
@@ -39,7 +39,7 @@ class MainPage : BasePage() {
         )
 
         TextSummaryWithArrow(
-            TextSummaryV("通知和控制中心") {
+            TextSummaryV("应用间分享") {
                 showFragment("ShareToAppPage")
             }
         )
