@@ -6,6 +6,7 @@ import com.highcapable.yukihookapi.hook.log.loggerD
 import com.highcapable.yukihookapi.hook.type.java.ArrayListClass
 import org.liuyi.mzfreeform.DataConst
 import org.liuyi.mzfreeform.utils.by
+import org.liuyi.mzfreeform.xposed.hooker.WeChatHooker.hook
 
 /**
  * @Author: Liuyi
@@ -17,15 +18,16 @@ object WeChatHooker : YukiBaseHooker() {
         /**
          * 实现微信平行小窗Plus
          */
-        "com.tencent.mm.ui.LauncherUI".hook {
-            injectMember {
-                method { name("onCreate") }
-                beforeHook {
-                    by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
-                        instanceClass.field { type(ArrayListClass) }.giveAll().forEach {
-                            val any = it.get(null)
-                            loggerD(msg = "$any")
-                            (any as? MutableList<*>)?.clear()
+        loggerD(msg = processName)
+        withProcess("com.tencent.mm") {
+            "com.tencent.mm.ui.LauncherUI".hook {
+                injectMember {
+                    method { name("onCreate") }
+                    beforeHook {
+                        by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
+                            instanceClass.field { type(ArrayListClass) }.giveAll().forEach {
+                                (it.get(null) as? MutableList<*>)?.clear()
+                            }
                         }
                     }
                 }

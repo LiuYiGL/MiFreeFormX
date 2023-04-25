@@ -167,30 +167,21 @@ object FrameworkBaseHooker : YukiBaseHooker() {
             }
         }
 
-
         /**
-         * 对 系统 启动的Activity进行 管控
-         * Hook com.android.server.am.ActivityManagerService#sendIntentSender
-         * 通常是一些系统应用如点击通知栏等进入这里
+         * 对 系统 启动的Activity进行 管控，系统PendingIntent会send到这里，通常都是通知
+         * "com.android.server.wm.ActivityTaskManagerService\$LocalService#startActivityInPackage"
          */
-        "com.android.server.am.ActivityManagerService".hook {
+        "com.android.server.wm.ActivityTaskManagerService\$LocalService".hook {
             injectMember {
-                method {
-                    name("sendIntentSender")
-                }
+                method { name("startActivityInPackage") }
                 beforeHook {
-                    loggerD(msg = "${this.args.asList()}")
-                    // 全局管控，只要在intent设置了 FreeFormIntent 都会优先判断是否开启小窗
-                    val intent = args[3] as Intent?
-                    val context = instance.getFieldValueOrNull("mContext") as? Context?
-                    if (isInBlacklist(context, intent)) return@beforeHook
-
-                    loggerD(msg = "intent: $intent and $context")
-                    if (intent != null && context != null) {
-                        if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
-                            args[7] = args[7] ?: getBasicBundle()
-                            intent.setFreeFromBundle(args[7] as Bundle, context)
-                        }
+                    loggerD(msg = "${args.asList()}")
+                    by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
+                        // 排除一些系统进程
+                        if (args[0] == 1000) return@by
+                        val intent = args[5] as? Intent?
+                        intent?.removeFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
                     }
                 }
             }
