@@ -38,6 +38,7 @@ object HookEntry : IYukiHookXposedInit {
             loadSystem(FrameworkEnhanceHooker)
             loadSystem(FrameworkBaseHooker)
             loadApp("com.android.systemui", SystemUiHooker)
+            loadApp("com.tencent.mm", WeChatHooker)
         }
     }
 

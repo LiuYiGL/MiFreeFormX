@@ -70,4 +70,9 @@ object DataConst {
      * 修复小窗启动应用确认 修复打开小窗应用触发二次确认时会缩小当前应用的Bug
      */
     val FIX_START_SMALL_WINDOW_CONFIRM = PrefsData("fix_start_small_window_confirm", false)
+
+    /**
+     * 平行小窗Plus，实现边刷文章，边回消息
+     */
+    val PARALLEL_MULTI_WINDOW_PLUS = PrefsData("parallel_multi_window_plus", false)
 }

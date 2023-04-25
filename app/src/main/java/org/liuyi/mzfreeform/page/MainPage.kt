@@ -44,6 +44,13 @@ class MainPage : BasePage() {
             }
         )
 
+        Line()
+        TitleText(text = "特色功能")
+        TextSummaryWithSwitch(
+            TextSummaryV("平行小窗Plus", tips = "实现边刷文章边回消息，入口是通知，侧边栏，悬浮球"),
+            createSwitchV(DataConst.PARALLEL_MULTI_WINDOW_PLUS)
+        )
+
 
         Line()
         TitleText(text = "增强")

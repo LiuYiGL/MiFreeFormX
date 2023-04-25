@@ -65,3 +65,5 @@ fun ActivityInfo.isResizeableModeExt(): Boolean {
     return ActivityInfoClass.method { name("isResizeableMode") }.get().invoke<Boolean>(mode)
         ?: false
 }
+
+fun Intent.isSameApp(callPackage: String) = component?.packageName != callPackage

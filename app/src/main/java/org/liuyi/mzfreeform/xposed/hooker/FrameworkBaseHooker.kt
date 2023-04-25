@@ -110,13 +110,22 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                 beforeHook {
                     loggerD(msg = "${this.args.asList()}")
                     // 全局管控，只要在intent设置了 FreeFormIntent 都会优先判断是否开启小窗
+                    val caller = args[1] as String?
                     val intent = args[3] as Intent?
                     val context = instance.getFieldValueOrNull("mContext") as Context?
                     if (isInBlacklist(context, intent)) return@beforeHook
 
                     if (intent != null && context != null) {
+                        by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
+                            if (caller == "com.miui.touchassistant" || caller == "com.miui.securitycenter") {
+                                if (!intent.isSameApp(caller)) {
+                                    intent.forceFreeFromMode()
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                                }
+                            }
+                        }
                         by(this, DataConst.APP_JUMP) {
-                            if (isAppJump(args[0], args[1] as? String?, intent, context)) {
+                            if (isAppJump(args[0], caller, intent, context)) {
                                 intent.forceFreeFromMode()
                             }
                         }
