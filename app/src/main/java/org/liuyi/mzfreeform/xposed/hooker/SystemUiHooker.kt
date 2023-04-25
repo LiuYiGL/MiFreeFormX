@@ -91,8 +91,24 @@ object SystemUiHooker : YukiBaseHooker() {
                 beforeHook {
                     loggerD(msg = "${this.args.asList()}")
                     by(this, DataConst.OPEN_NOTICE) {
-                        args[1] = args[1] ?: Intent()
-                        (args[1] as Intent?)?.forceFreeFromMode()
+                        // 加载类
+                        val dependencyClass = "com.android.systemui.Dependency".toClass()
+                        val appMiniWindowManagerClass =
+                            "com.android.systemui.statusbar.notification.policy.AppMiniWindowManager".toClass()
+
+                        // 逻辑开始
+                        val appMiniWindowManager = dependencyClass.method {
+                            name("get")
+                            param(Class::class.java)
+                        }.get().call(appMiniWindowManagerClass)
+
+                        appMiniWindowManagerClass.method { name("launchMiniWindowActivity") }
+                            .get(appMiniWindowManager).let {
+                                val targetPkg = args[3]?.javaClass
+                                    ?.method { name("getMiniWindowTargetPkg") }
+                                    ?.get(args[3])?.invoke<String?>()
+                                it.call(targetPkg, args[0])
+                            }
                     }
                 }
             }
