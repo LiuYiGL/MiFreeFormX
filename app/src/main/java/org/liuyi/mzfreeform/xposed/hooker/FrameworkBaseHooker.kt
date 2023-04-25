@@ -24,7 +24,8 @@ import org.liuyi.mzfreeform.utils.*
 
 object FrameworkBaseHooker : YukiBaseHooker() {
 
-    private val targetBlacklist = listOf("com.android.camera", "com.miui.tsmclient")
+    private val targetBlacklist =
+        listOf("com.android.camera", "com.miui.tsmclient", "com.lbe.security.miui")
 
     // 禁止小窗黑名单
     private fun isInBlacklist(context: Context? = null, intent: Intent?): Boolean {
