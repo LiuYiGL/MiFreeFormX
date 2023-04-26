@@ -7,7 +7,6 @@ import android.content.Intent
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
-import com.highcapable.yukihookapi.hook.log.loggerE
 import org.liuyi.mzfreeform.DataConst
 import org.liuyi.mzfreeform.intent_extra.forceFreeFromMode
 import org.liuyi.mzfreeform.utils.*
@@ -23,9 +22,9 @@ object SystemUiHooker : YukiBaseHooker() {
     override fun onHook() {
         var context: Context? = null
 
-        val CommonUtilClass = "com.miui.systemui.util.CommonUtil".toClass()
+        val commonUtilClass = "com.miui.systemui.util.CommonUtil".toClass()
         val getTopActivity: () -> ComponentName? = {
-            CommonUtilClass.method { name("getTopActivity") }.get().invoke<ComponentName>()
+            commonUtilClass.method { name("getTopActivity") }.get().invoke<ComponentName>()
         }
 
         /**
@@ -45,36 +44,37 @@ object SystemUiHooker : YukiBaseHooker() {
          * (android.content.Intent, boolean, boolean, boolean, com.android.systemui.plugins.ActivityStarter.Callback,
          * int, com.android.systemui.animation.ActivityLaunchAnimator.Controller, android.os.UserHandle)
          *
-         * 当 长按 Tile 时触发方法，可在此进行判断
+         * 当 长按 Tile 时，或点击设置时触发方法，可在此进行判断
          */
         "com.android.systemui.statusbar.phone.CentralSurfacesImpl".hook {
-            injectMember(tag = "CentralSurfacesImpl#startActivityDismissingKeyguard") {
+            injectMember {
                 method {
                     name("startActivityDismissingKeyguard")
                     paramCount(8)
                 }
                 beforeHook {
                     by(this, DataConst.LONG_PRESS_TILE) {
-                        (args[0] as Intent?)?.apply {
-                            loggerD(msg = "intent: $this")
-
-                            kotlin.runCatching {
-                                val topActivity = getTopActivity()
-                                val componentName: ComponentName? =
-                                    resolveActivity(context!!.packageManager)
-                                loggerD(msg = "$topActivity and $componentName")
-                                requireNotNull(topActivity)
-                                requireNotNull(componentName)
-                                if (componentName.packageName == topActivity.packageName) {
-                                    return@by
-                                }
-                            }.exceptionOrNull()?.let { loggerE(e = it) }
-
-                            if (prefs.direct().get(DataConst.FORCE_CONTROL_ALL_OPEN)) {
-                                forceFreeFromMode()
-                                return@by
+                        loggerD(msg = "${args.asList()}")
+                        var intent = args[0] as? Intent?
+                        if (intent != null && context != null) {
+                            // 备份Intent，防止SB的系统用同一个实例吃遍天下
+                            args[0] = Intent(intent)
+                            intent = args[0] as Intent
+                            val topActivity = getTopActivity()
+                            val componentName = intent.resolveActivity(context!!.packageManager)
+                            loggerD(msg = "$topActivity and $componentName")
+                            // 如果是顶部App 则不处理
+                            if (topActivity?.packageName == componentName.packageName) return@by
+                            if (prefs.direct().get(DataConst.FORCE_CONTROL_ALL_OPEN)
+                                || isTile(intent)
+                            ) {
+                                intent.forceFreeFromMode()
+                                var flag = args[5] as Int
+                                flag = flag or Intent.FLAG_ACTIVITY_NEW_TASK
+                                flag = flag or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+                                flag = flag or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+                                args[5] = flag
                             }
-                            customIntent(this)
                         }
                     }
                 }
@@ -152,28 +152,20 @@ object SystemUiHooker : YukiBaseHooker() {
      * @param intent
      * @return
      */
-    private fun customIntent(intent: Intent?) {
-        intent?.apply {
-            if (prefs.direct().get(DataConst.FORCE_CONTROL_ALL_OPEN)) {
-                forceFreeFromMode()
-                return
-            }
+    private fun isTile(intent: Intent?): Boolean {
+        return intent?.run {
             action?.let {
-                when {
-                    it == "android.service.quicksettings.action.QS_TILE_PREFERENCES" -> forceFreeFromMode()
-                    it.startsWith("android.settings") && it != "android.settings.SETTINGS" -> forceFreeFromMode()
-                }
-                return
+                if (it == "android.service.quicksettings.action.QS_TILE_PREFERENCES") true
+                else if (it == "android.settings.SETTINGS") false
+                else if (it.startsWith("android.settings")) true
+                else null
+            } ?: component?.let {
+                if (it.packageName == "com.android.settings" || it.packageName == "com.android.phone") true
+                else null
+            } ?: `package`?.let {
+                if (it.startsWith("com.android")) true
+                else null
             }
-            component?.let {
-                when (it.packageName) {
-                    "com.android.settings", "com.android.phone" -> forceFreeFromMode()
-                }
-                return
-            }
-            `package`?.let {
-                if (it.startsWith("com.android")) forceFreeFromMode()
-            }
-        }
+        } ?: false
     }
 }
