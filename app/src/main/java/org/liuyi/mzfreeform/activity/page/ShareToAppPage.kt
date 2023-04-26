@@ -1,4 +1,4 @@
-package org.liuyi.mzfreeform.page
+package org.liuyi.mzfreeform.activity.page
 
 import cn.fkj233.ui.activity.annotation.BMPage
 import cn.fkj233.ui.activity.view.TextSummaryV
