@@ -64,7 +64,7 @@ object DataConst {
     val DISABLE_MULTI_OFFSET = PrefsData("DISABLE_multi_offset", false)
 
     // 解除小窗数量限制
-    val CANCEL_MULTI_WINDOW_LIMIT = PrefsData("cancel_multi_window_limit", false)
+    val LIFT_WINDOW_NUM_LIMIT = PrefsData("cancel_multi_window_limit", false)
 
     /**
      * 修复小窗启动应用确认 修复打开小窗应用触发二次确认时会缩小当前应用的Bug
