@@ -69,7 +69,7 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
             injectMember {
                 method { name("getMaxMiuiFreeFormStackCount") }
                 beforeHook {
-                    by(this, DataConst.CANCEL_MULTI_WINDOW_LIMIT) {
+                    by(this, DataConst.LIFT_WINDOW_NUM_LIMIT) {
                         result = 128
                     }
                 }
@@ -95,7 +95,7 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
             injectMember {
                 method { name("buildStartIntent") }
                 afterHook {
-                    by(this, DataConst.FIX_START_SMALL_WINDOW_CONFIRM) {
+                    byAny(this, DataConst.MAIN_SWITCH) {
                         result<Intent>()?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     }
                 }

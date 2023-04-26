@@ -88,10 +88,6 @@ object FrameworkBaseHooker : YukiBaseHooker() {
             intent?.data != null -> true
             else -> false
         }
-        // 强制添加 new task 标签
-        if (res && prefs.direct().get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
-            intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
         return res
     }
 
@@ -133,6 +129,10 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                             // 开启了分享至应用
                             if (isShareToApp(args[1] as? String?, intent)) {
                                 intent.forceFreeFromMode()
+                                // 强制添加 new task 标签
+                                by(this, DataConst.SHARE_TO_APP_FORCE_NEW_TASK) {
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
                             }
                         }
                         if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
@@ -156,6 +156,10 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                             if (isShareToApp(args[1] as? String?, intent)) {
                                 // 开启分享应用
                                 intent.forceFreeFromMode()
+                                // 强制添加 new task 标签
+                                by(this, DataConst.SHARE_TO_APP_FORCE_NEW_TASK) {
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
                             }
                             if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
                                 args[9] = args[9] ?: getBasicBundle()
