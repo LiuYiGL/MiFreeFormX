@@ -14,7 +14,7 @@ android {
         applicationId "org.liuyi.mifreeformx"
         minSdk 29
         targetSdk 33
-        versionCode 1
+        versionCode getSelfDefinedVersion("code")
         versionName getSelfDefinedVersion("name")
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -24,6 +24,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {
@@ -57,16 +58,13 @@ dependencies {
 }
 static def getSelfDefinedVersion(type) {
     int aa = 1
-    int bb = 0
-    Process process = "git rev-list --count HEAD".execute()
-    process.waitFor()
+    int bb = 0  // 0-99
+    int cc = 4  // 0-99
 
     if ("code" == type) {
-        aa * 100 + bb
+        aa * 10000 + bb * 100 + cc
     } else if ("name" == type) {
-        String today = new Date().format("yyMMddHHmmss")
-        process = "git describe --always".execute()
-        process.waitFor()
-        "$aa.$bb.$today"
+        String today = new Date().format("yy.MM.dd.HH.mm.ss")
+        "$today-beta"
     }
 }
