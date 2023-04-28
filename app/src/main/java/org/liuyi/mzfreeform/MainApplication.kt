@@ -1,4 +1,4 @@
-package org.liuyi.mzfreeform
+package org.liuyi.mifreeformx
 
 import com.highcapable.yukihookapi.hook.xposed.application.ModuleApplication
 

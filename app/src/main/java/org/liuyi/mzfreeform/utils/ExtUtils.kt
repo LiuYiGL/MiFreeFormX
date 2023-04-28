@@ -1,9 +1,11 @@
-package org.liuyi.mzfreeform.utils
+package org.liuyi.mifreeformx.utils
 
+import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
@@ -67,3 +69,6 @@ fun ActivityInfo.isResizeableModeExt(): Boolean {
 }
 
 fun Intent.isSameApp(callPackage: String) = component?.packageName == callPackage
+
+internal fun Activity.startUriString(uriString: String) =
+    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uriString)))

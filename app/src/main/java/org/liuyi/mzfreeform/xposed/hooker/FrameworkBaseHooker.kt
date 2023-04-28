@@ -1,19 +1,17 @@
-package org.liuyi.mzfreeform.xposed.hooker
+package org.liuyi.mifreeformx.xposed.hooker
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
-import com.highcapable.yukihookapi.hook.param.HookParam
-import org.liuyi.mzfreeform.DataConst
-import org.liuyi.mzfreeform.intent_extra.FreeFormIntent
-import org.liuyi.mzfreeform.intent_extra.forceFreeFromMode
-import org.liuyi.mzfreeform.intent_extra.getFreeFormMode
-import org.liuyi.mzfreeform.intent_extra.setFreeFromBundle
-import org.liuyi.mzfreeform.utils.*
+import org.liuyi.mifreeformx.DataConst
+import org.liuyi.mifreeformx.intent_extra.FreeFormIntent
+import org.liuyi.mifreeformx.intent_extra.forceFreeFromMode
+import org.liuyi.mifreeformx.intent_extra.getFreeFormMode
+import org.liuyi.mifreeformx.intent_extra.setFreeFromBundle
+import org.liuyi.mifreeformx.utils.*
 
 /**
  * @Author: Liuyi

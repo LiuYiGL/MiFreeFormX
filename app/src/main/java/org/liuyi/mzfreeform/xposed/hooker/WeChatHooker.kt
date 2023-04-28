@@ -1,12 +1,12 @@
-package org.liuyi.mzfreeform.xposed.hooker
+package org.liuyi.mifreeformx.xposed.hooker
 
+import android.app.Activity
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.log.loggerD
 import com.highcapable.yukihookapi.hook.type.java.ArrayListClass
-import org.liuyi.mzfreeform.DataConst
-import org.liuyi.mzfreeform.utils.by
-import org.liuyi.mzfreeform.xposed.hooker.WeChatHooker.hook
+import org.liuyi.mifreeformx.DataConst
+import org.liuyi.mifreeformx.utils.by
 
 /**
  * @Author: Liuyi

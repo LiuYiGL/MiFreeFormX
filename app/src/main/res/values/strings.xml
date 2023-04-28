@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mi自由小窗X</string>
+    <string name="app_name">MIUI自由小窗X</string>
     <string name="warning">警告</string>
     <string name="not_support">当前模块未激活或您当前Lsposed框架并不支持，这将导致本模块的全部功能无法使用，请检查您当前的配置</string>
     <string name="done">确定</string>
@@ -19,7 +19,7 @@
     <string name="long_press_tile_open_window">长按快捷开关打开小窗</string>
     <string name="long_press_tile_open_window_tips">会强制禁用小窗黑名单</string>
     <string name="force_all_tile_use_widow">强制所有快捷方式使用小窗</string>
-    <string name="force_all_tile_use_widow_tips">Miui将控制中心的所有按钮都当做是快捷方式，为了符合操作逻辑，默认会过滤一些按钮，打开本开关会关闭过滤</string>
+    <string name="force_all_tile_use_widow_tips">MIUI将控制中心的所有按钮都当做是快捷方式，为了符合操作逻辑，默认会过滤一些按钮，打开本开关会关闭过滤</string>
     <string name="jump_between_applications">应用间跳转</string>
     <string name="open">打开</string>
     <string name="jump_between_applications_use_window_tips">应用间跳转时使用小窗打开</string>
@@ -34,4 +34,36 @@
     <string name="disable_window_offset">禁用多小窗间的位置偏移</string>
     <string name="disable_window_offset_tips">开启后小窗始终在默认位置生成</string>
     <string name="lift_window_num_limit">解除小窗数量限制</string>
+    <string name="module_settings">模块设置</string>
+    <string name="menu">菜单</string>
+    <string name="reboot">重启系统</string>
+    <string name="rebootSystemUI">重启系统界面</string>
+    <string name="rebootAllScope">重启全部作用域</string>
+    <string name="cancel">取消</string>
+    <string name="reboot_msg">确认重启系统吗？</string>
+    <string name="other">其他</string>
+    <string name="coolapk">酷安</string>
+    <string name="coolapk_author">酷安 @LiuYi_GL</string>
+    <string name="open_source">开源仓库</string>
+    <string name="feedback">反馈</string>
+    <string name="about">关于</string>
+    <string name="donation">捐赠打赏</string>
+    <string name="donation_tips">制作不易，您的支持是我最大的动力</string>
+    <string name="wechat_admiration">微信赞赏</string>
+    <string name="alipay_donation">支付宝打赏</string>
+    <string name="close">关闭</string>
+    <string name="open_wechat_scanner">打开微信扫一扫</string>
+    <string name="developer">开发者</string>
+    <string name="thanks">感谢名单</string>
+    <string name="yuki_hook_api">Yuki Hook API</string>
+    <string name="yuki_hook_api_tips">使用 Kotlin 构建的高效 Hook API 与 Xposed 模块解决方案。</string>
+    <string name="yuki_hook_api_at_authod">Yuki Hook API @fankes</string>
+    <string name="android_util_code_at_authod">"AndroidUtilCode @Blankj"</string>
+    <string name="android_util_code_tips">一个强大易用的安卓工具类库</string>
+    <string name="blockmiui_at_authod">"blockmiui @Block-Network"</string>
+    <string name="blockmiui_tips">提供类MIUI主题</string>
+    <string name="max_free_form_at_authod">MaxFreeForm @YifePlayte</string>
+    <string name="max_free_form_tips">为各种MIUI13设备解除多小窗限制</string>
+    <string name="woo_box_for_miui_at_authod">WooBox For MIUI @乌堆小透明</string>
+    <string name="woo_box_for_miui_tips">基于 MIUI13（Android12）适配的系统拓展Xposed模块</string>
 </resources>

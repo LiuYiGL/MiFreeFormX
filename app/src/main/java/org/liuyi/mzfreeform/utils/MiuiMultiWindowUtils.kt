@@ -1,4 +1,4 @@
-package org.liuyi.mzfreeform.utils
+package org.liuyi.mifreeformx.utils
 
 import android.app.ActivityOptions
 import android.content.Context
@@ -8,7 +8,7 @@ import com.highcapable.yukihookapi.hook.log.loggerD
 import com.highcapable.yukihookapi.hook.type.android.ContextClass
 import com.highcapable.yukihookapi.hook.type.java.BooleanType
 import com.highcapable.yukihookapi.hook.type.java.StringClass
-import org.liuyi.mzfreeform.xposed.hooker.FrameworkEnhanceHooker.toClass
+import org.liuyi.mifreeformx.xposed.hooker.FrameworkEnhanceHooker.toClass
 
 /**
  * @Author: Liuyi

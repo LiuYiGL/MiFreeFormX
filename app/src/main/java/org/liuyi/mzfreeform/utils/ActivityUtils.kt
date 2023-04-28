@@ -1,4 +1,4 @@
-package org.liuyi.mzfreeform.utils
+package org.liuyi.mifreeformx.utils
 
 import android.app.Activity
 import android.content.ComponentName

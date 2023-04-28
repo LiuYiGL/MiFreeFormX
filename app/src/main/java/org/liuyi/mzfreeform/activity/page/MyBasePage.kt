@@ -1,12 +1,11 @@
-package org.liuyi.mzfreeform.activity.page
+package org.liuyi.mifreeformx.activity.page
 
-import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import cn.fkj233.ui.activity.data.BasePage
 import cn.fkj233.ui.activity.view.SwitchV
 import com.highcapable.yukihookapi.hook.factory.prefs
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
-import org.liuyi.mzfreeform.R
+import org.liuyi.mifreeformx.R
 
 /**
  * @Author: Liuyi

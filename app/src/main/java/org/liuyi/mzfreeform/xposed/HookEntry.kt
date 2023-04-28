@@ -1,4 +1,4 @@
-package org.liuyi.mzfreeform.xposed
+package org.liuyi.mifreeformx.xposed
 
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
@@ -6,9 +6,9 @@ import com.highcapable.yukihookapi.hook.factory.configs
 import com.highcapable.yukihookapi.hook.log.loggerI
 import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import org.liuyi.mzfreeform.BuildConfig
-import org.liuyi.mzfreeform.DataConst
-import org.liuyi.mzfreeform.xposed.hooker.*
+import org.liuyi.mifreeformx.BuildConfig
+import org.liuyi.mifreeformx.DataConst
+import org.liuyi.mifreeformx.xposed.hooker.*
 
 /**
  * @Author: Liuyi

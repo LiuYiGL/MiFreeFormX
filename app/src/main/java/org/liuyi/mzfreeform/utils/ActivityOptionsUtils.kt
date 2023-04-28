@@ -1,4 +1,4 @@
-package org.liuyi.mzfreeform.utils
+package org.liuyi.mifreeformx.utils
 
 import android.app.ActivityOptions
 import android.os.Bundle

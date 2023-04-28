@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace 'org.liuyi.mzfreeform'
+    namespace 'org.liuyi.mifreeformx'
     compileSdk 33
 
     defaultConfig {
-        applicationId "org.liuyi.mzfreeform"
+        applicationId "org.liuyi.mifreeformx"
         minSdk 29
         targetSdk 33
         versionCode 1
@@ -53,8 +53,7 @@ dependencies {
     // ❗作为 Xposed 模块使用务必添加，其它情况可选
     ksp 'com.highcapable.yukihookapi:ksp-xposed:1.1.9'
 
-    // https://mvnrepository.com/artifact/com.github.kyuubiran/EzXHelper
-    implementation 'com.github.kyuubiran:EzXHelper:2.0.0'
+    implementation 'com.blankj:utilcodex:1.31.1'
 }
 static def getSelfDefinedVersion(type) {
     int aa = 1
@@ -68,7 +67,6 @@ static def getSelfDefinedVersion(type) {
         String today = new Date().format("yyMMddHHmmss")
         process = "git describe --always".execute()
         process.waitFor()
-        String sha1 = process.getText().trim()
-        "$aa.$bb.$today.$sha1"
+        "$aa.$bb.$today"
     }
 }

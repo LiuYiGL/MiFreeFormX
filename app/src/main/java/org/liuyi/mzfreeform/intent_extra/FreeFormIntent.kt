@@ -1,12 +1,12 @@
-package org.liuyi.mzfreeform.intent_extra
+package org.liuyi.mifreeformx.intent_extra
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import org.liuyi.mzfreeform.intent_extra.FreeFormIntent.FREE_FORM_EXTRA_FORCE
-import org.liuyi.mzfreeform.intent_extra.FreeFormIntent.FREE_FORM_EXTRA_IGNORE
-import org.liuyi.mzfreeform.intent_extra.FreeFormIntent.INTENT_FREE_FORM_EXTRA_KEY
-import org.liuyi.mzfreeform.utils.toMultiWidow
+import org.liuyi.mifreeformx.intent_extra.FreeFormIntent.FREE_FORM_EXTRA_FORCE
+import org.liuyi.mifreeformx.intent_extra.FreeFormIntent.FREE_FORM_EXTRA_IGNORE
+import org.liuyi.mifreeformx.intent_extra.FreeFormIntent.INTENT_FREE_FORM_EXTRA_KEY
+import org.liuyi.mifreeformx.utils.toMultiWidow
 
 /**
  * @Author: Liuyi

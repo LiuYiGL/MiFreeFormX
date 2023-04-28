@@ -1,8 +1,8 @@
-package org.liuyi.mzfreeform.utils
+package org.liuyi.mifreeformx.utils
 
 import android.content.ComponentName
 import com.highcapable.yukihookapi.hook.factory.method
-import org.liuyi.mzfreeform.xposed.hooker.SystemUiHooker.toClass
+import org.liuyi.mifreeformx.xposed.hooker.SystemUiHooker.toClass
 
 /**
  * @Author: Liuyi

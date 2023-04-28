@@ -7,7 +7,7 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
@@ -15,12 +15,25 @@
 
         <activity
             android:name=".activity.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
+            </intent-filter>
+        </activity>
+
+        <activity-alias
+            android:name=".launcher"
+            android:enabled="true"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:targetActivity=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
 
         <!-- 设置为 Xposed 模块 -->
         <meta-data
@@ -30,7 +43,7 @@
         <!-- 设置你的模块描述 -->
         <meta-data
             android:name="xposeddescription"
-            android:value="填写你的 Xposed 模块描述" />
+            android:value="为MIUI设备提供类魅族逻辑的小窗操作" />
 
         <!-- 最低 Xposed 版本号，若你正在使用 EdXposed/LSPosed，建议最低为 93 -->
         <meta-data
@@ -41,6 +54,10 @@
         <meta-data
             android:name="xposedsharedprefs"
             android:value="true" />
+
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/xposedscope" />
     </application>
 
 </manifest>

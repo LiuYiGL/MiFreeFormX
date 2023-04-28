@@ -1,10 +1,10 @@
-package org.liuyi.mzfreeform.xposed.hooker
+package org.liuyi.mifreeformx.xposed.hooker
 
 import android.content.Intent
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import org.liuyi.mzfreeform.DataConst
-import org.liuyi.mzfreeform.utils.by
-import org.liuyi.mzfreeform.utils.byAny
+import org.liuyi.mifreeformx.DataConst
+import org.liuyi.mifreeformx.utils.by
+import org.liuyi.mifreeformx.utils.byAny
 
 /**
  * @Author: Liuyi

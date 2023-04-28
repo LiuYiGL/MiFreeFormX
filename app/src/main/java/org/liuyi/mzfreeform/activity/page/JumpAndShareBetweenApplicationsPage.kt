@@ -1,10 +1,10 @@
-package org.liuyi.mzfreeform.activity.page
+package org.liuyi.mifreeformx.activity.page
 
 import android.annotation.SuppressLint
 import cn.fkj233.ui.activity.annotation.BMPage
 import cn.fkj233.ui.activity.view.TextSummaryV
-import org.liuyi.mzfreeform.DataConst
-import org.liuyi.mzfreeform.R
+import org.liuyi.mifreeformx.DataConst
+import org.liuyi.mifreeformx.R
 
 /**
  * @Author: Liuyi

@@ -1,11 +1,11 @@
-package org.liuyi.mzfreeform.activity
+package org.liuyi.mifreeformx.activity
 
 import android.os.Bundle
 import cn.fkj233.ui.activity.MIUIActivity
 import cn.fkj233.ui.dialog.MIUIDialog
 import com.highcapable.yukihookapi.YukiHookAPI
-import org.liuyi.mzfreeform.R
-import org.liuyi.mzfreeform.activity.page.*
+import org.liuyi.mifreeformx.R
+import org.liuyi.mifreeformx.activity.page.*
 
 /**
  * @Author: Liuyi
@@ -20,6 +20,8 @@ class MainActivity : MIUIActivity() {
         registerPage(JumpAndShareBetweenApplicationsPage::class.java)
         registerPage(ParallelSmallWindowPage::class.java)
         registerPage(MiscellaneousPage::class.java)
+        registerPage(MenuPage::class.java)
+        registerPage(AboutPage::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,13 +29,12 @@ class MainActivity : MIUIActivity() {
             MIUIDialog(this) {
                 setTitle(R.string.warning)
                 setMessage(R.string.not_support)
-                setCancelable(false)
                 setRButton(R.string.done) {
                     cancel()
                 }
             }.show()
         }
-
+        setSP(getPreferences(MODE_PRIVATE))
         super.onCreate(savedInstanceState)
     }
 }
