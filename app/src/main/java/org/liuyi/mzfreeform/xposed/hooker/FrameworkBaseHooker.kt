@@ -108,7 +108,7 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                     if (intent != null && context != null) {
                         by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
                             if (caller == "com.miui.touchassistant" || caller == "com.miui.securitycenter") {
-                                if (!intent.isSameApp(caller)) {
+                                if (!intent.isSameApp(caller) && intent.action == Intent.ACTION_MAIN) {
                                     intent.forceFreeFromMode()
                                     intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
                                 }
