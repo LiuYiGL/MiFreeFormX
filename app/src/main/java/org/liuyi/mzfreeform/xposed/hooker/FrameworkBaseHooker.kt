@@ -70,23 +70,19 @@ object FrameworkBaseHooker : YukiBaseHooker() {
 
     // 应用间分享
     private fun isShareToApp(callingPackage: String?, intent: Intent?): Boolean {
-        val res: Boolean = when {
-            intent?.`package` == callingPackage -> false
-            intent?.action == Intent.ACTION_SEND -> true
-            intent?.component != null ->
-                intent.component?.let {
-                    when (it.packageName) {
-                        callingPackage -> false
-                        "com.miui.packageinstaller" -> it.className == "com.miui.packageInstaller.NewPackageInstallerActivity"
-                        "com.tencent.mm" -> it.className.contains(".plugin.base.stub.WXEntryActivity")
-                        else -> false
-                    }
-                } ?: false
-            intent?.clipData != null -> true
-            intent?.data != null -> true
-            else -> false
+        if (intent?.`package` == callingPackage) return false
+        intent?.action.let {
+            if (it == Intent.ACTION_SEND) return true
+            // 使用全屏打开 miui 系统选择分享界面
+            if (it == "miui.intent.action.MIUI_CHOOSER") return false
         }
-        return res
+        intent?.component?.let {
+            if (it.packageName == callingPackage) return false
+            // 微信分享sdk
+            if (it.className == "com.tencent.mm.plugin.base.stub.WXEntryActivity") return true
+        }
+        if (intent?.clipData != null) return true
+        return false
     }
 
 
