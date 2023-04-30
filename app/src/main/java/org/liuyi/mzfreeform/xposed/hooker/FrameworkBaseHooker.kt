@@ -77,9 +77,11 @@ object FrameworkBaseHooker : YukiBaseHooker() {
             if (it == "miui.intent.action.MIUI_CHOOSER") return false
         }
         intent?.component?.let {
-            if (it.packageName == callingPackage) return false
             // 微信分享sdk
             if (it.className == "com.tencent.mm.plugin.base.stub.WXEntryActivity") return true
+            // QQ分享sdk
+            if (it.className.endsWith(".wxapi.QQShareActivity")) return true
+            if (it.packageName == callingPackage) return false
         }
         if (intent?.clipData != null) return true
         return false
@@ -123,6 +125,7 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                             // 开启了分享至应用
                             if (isShareToApp(args[1] as? String?, intent)) {
                                 intent.forceFreeFromMode()
+                                intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
                                 // 强制添加 new task 标签
                                 by(this, DataConst.SHARE_TO_APP_FORCE_NEW_TASK) {
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
