@@ -79,11 +79,13 @@ object FrameworkBaseHooker : YukiBaseHooker() {
         intent?.component?.let {
             // 微信分享sdk
             if (it.className == "com.tencent.mm.plugin.base.stub.WXEntryActivity") return true
-            // QQ分享sdk
-            if (it.className.endsWith(".wxapi.QQShareActivity")) return true
             if (it.packageName == callingPackage) return false
         }
         if (intent?.clipData != null) return true
+        intent?.data?.let {
+            // QQ分享sdk
+            if (it.scheme == "mqqapi" && it.host == "share") return true
+        }
         return false
     }
 
