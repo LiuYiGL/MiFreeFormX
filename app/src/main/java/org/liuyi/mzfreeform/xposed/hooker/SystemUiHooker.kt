@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
 import org.liuyi.mifreeformx.DataConst
@@ -27,18 +28,7 @@ object SystemUiHooker : YukiBaseHooker() {
             commonUtilClass.method { name("getTopActivity") }.get().invoke<ComponentName>()
         }
 
-        /**
-         * Hook com.android.systemui.CoreStartable 构造器获取 Context
-         */
-        "com.android.systemui.CoreStartable".hook {
-            injectMember(tag = "com.android.systemui.CoreStartable#CoreStartable") {
-                constructor { paramCount(1) }
-                beforeHook {
-                    context = if (args[0] is Context) args[0] as Context? else null
-                    if (context != null) removeSelf()
-                }
-            }
-        }
+        val coreStartableClass = "com.android.systemui.CoreStartable".toClass()
         /**
          * Hook com.android.systemui.statusbar.phone.CentralSurfacesImpl#startActivityDismissingKeyguard
          * (android.content.Intent, boolean, boolean, boolean, com.android.systemui.plugins.ActivityStarter.Callback,
@@ -56,6 +46,8 @@ object SystemUiHooker : YukiBaseHooker() {
                     by(this, DataConst.LONG_PRESS_TILE) {
                         loggerD(msg = "${args.asList()}")
                         var intent = args[0] as? Intent?
+                        context = context ?: coreStartableClass.field { name("mContext") }
+                            .get(instance).any() as? Context?
                         if (intent != null && context != null) {
                             // 备份Intent，防止SB的系统用同一个实例吃遍天下
                             args[0] = Intent(intent)
