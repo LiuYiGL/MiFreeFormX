@@ -103,11 +103,12 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                     loggerD(msg = "${this.args.asList()}")
                     // 全局管控，只要在intent设置了 FreeFormIntent 都会优先判断是否开启小窗
                     val caller = args[1] as String?
-                    val intent = args[3] as Intent?
+                    val intent = Intent(args[3] as? Intent?)
+                    args[3] = intent
                     val context = instance.getFieldValueOrNull("mContext") as Context?
                     if (isInBlacklist(context, intent)) return@beforeHook
 
-                    if (intent != null && context != null) {
+                    if (context != null) {
                         by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
                             if (caller == "com.miui.touchassistant" || caller == "com.miui.securitycenter") {
                                 if (!intent.isSameApp(caller) && intent.action == Intent.ACTION_MAIN) {
@@ -147,9 +148,10 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                 beforeHook {
                     by(this, DataConst.SHARE_TO_APP) {
                         val context = instance.getFieldValueOrNull("mContext") as? Context?
-                        val intent = args[2] as? Intent?
+                        val intent = Intent(args[2] as? Intent?)
+                        args[2] = intent
                         if (isInBlacklist(context, intent)) return@by
-                        if (context != null && intent != null) {
+                        if (context != null) {
                             if (isShareToApp(args[1] as? String?, intent)) {
                                 // 开启分享应用
                                 intent.forceFreeFromMode()
@@ -180,9 +182,10 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                     by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
                         // 排除一些系统进程
                         if (args[0] == 1000) return@by
-                        val intent = args[5] as? Intent?
-                        intent?.removeFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                        intent?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                        val intent = Intent(args[5] as? Intent?)
+                        args[5] = intent
+                        intent.removeFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
                     }
                 }
             }
