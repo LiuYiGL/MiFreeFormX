@@ -9,6 +9,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import org.liuyi.mifreeformx.BuildConfig
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.xposed.hooker.*
+import org.liuyi.mifreeformx.xposed.hooker.SystemUiHooker
 
 /**
  * @Author: Liuyi
@@ -20,7 +21,7 @@ object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         configs {
-            isDebug = BuildConfig.DEBUG
+            isDebug = true
             debugLog {
                 tag = "MzFreeForm"
             }
