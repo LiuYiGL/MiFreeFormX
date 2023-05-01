@@ -1,6 +1,7 @@
 package org.liuyi.mifreeformx.xposed.hooker
 
 import android.annotation.SuppressLint
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -55,8 +56,10 @@ object FrameworkBaseHooker : YukiBaseHooker() {
         if (callingPackage == "com.miui.securityadd") return false
         if (intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK != 0) {
             // 包含 new 标签
-            val componentName = intent.resolveActivity(context.packageManager)
+            val componentName = intent.component ?: intent.resolveActivity(context.packageManager)
             loggerD(msg = "$componentName")
+            // 修复微信分享回调导致源activity使用小窗
+            if (componentName.className.endsWith(".wxapi.WXEntryActivity")) return false
             componentName?.packageName?.let { name ->
                 loggerD(msg = name)
                 if (callingPackage != name) {
@@ -174,20 +177,37 @@ object FrameworkBaseHooker : YukiBaseHooker() {
 
         /**
          * 对 系统 启动的Activity进行 管控，系统PendingIntent会send到这里，通常都是通知
-         * "com.android.server.wm.ActivityTaskManagerService\$LocalService#startActivityInPackage"
+         * 1. 通知
+         * 2. 非双开的微信分享
+         * "com.android.server.wm.ActivityStartController#startActivityInPackage"
          */
-        "com.android.server.wm.ActivityTaskManagerService\$LocalService".hook {
+        "com.android.server.wm.ActivityStartController".hook {
             injectMember {
                 method { name("startActivityInPackage") }
                 beforeHook {
                     loggerD(msg = "${args.asList()}")
-                    by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
-                        // 排除一些系统进程
-                        if (args[0] == 1000) return@by
-                        val intent = Intent(args[5] as? Intent?)
-                        args[5] = intent
-                        intent.removeFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                    val intent = Intent(args[5] as? Intent?)
+                    args[5] = intent
+                    val context = instanceOrNull?.getFieldValueOrNull("mService")
+                        ?.getFieldValueOrNull("mContext") as? Context?
+
+                    val callingPackage = args[3] as? String?
+
+                    if (context != null) {
+                        if (isShareToApp(callingPackage, intent)) {
+                            by(this, DataConst.SHARE_TO_APP) {
+                                val mOriginalOptions =
+                                    (args[11]?.getFieldValueOrNull("mOriginalOptions") as? ActivityOptions?)
+                                mOriginalOptions?.setLaunchWindowingModeExt(5)
+                                mOriginalOptions?.launchBounds =
+                                    MiuiMultiWindowUtils.getFreeformRect(context)
+                            }
+                        } else {
+                            by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
+                                intent.removeFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                            }
+                        }
                     }
                 }
             }
