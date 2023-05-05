@@ -31,5 +31,15 @@ class MiscellaneousPage : MyBasePage() {
             TextV(textId = R.string.lift_window_num_limit),
             createSwitchV(DataConst.LIFT_WINDOW_NUM_LIMIT)
         )
+        TextSummaryWithSpinner(
+            TextSummaryV(
+                textId = R.string.freeform_lose_focus_opt,
+                tipsId = R.string.freeform_lose_focus_opt_tips
+            ),
+            createSpinnerV(
+                DataConst.FREEFORM_LOSE_FOCUS_OPT_TYPE,
+                DataConst.freeformLoseFocusOptTypeString
+            )
+        )
     }
 }

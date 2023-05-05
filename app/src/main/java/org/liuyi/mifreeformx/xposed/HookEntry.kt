@@ -6,7 +6,6 @@ import com.highcapable.yukihookapi.hook.factory.configs
 import com.highcapable.yukihookapi.hook.log.loggerI
 import com.highcapable.yukihookapi.hook.log.loggerW
 import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
-import org.liuyi.mifreeformx.BuildConfig
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.xposed.hooker.*
 import org.liuyi.mifreeformx.xposed.hooker.SystemUiHooker
@@ -40,6 +39,7 @@ object HookEntry : IYukiHookXposedInit {
             loadSystem(FrameworkBaseHooker)
             loadApp("com.android.systemui", SystemUiHooker)
             loadApp("com.tencent.mm", WeChatHooker)
+            loadSystem(FreeformLoseFocusHooker)
         }
     }
 

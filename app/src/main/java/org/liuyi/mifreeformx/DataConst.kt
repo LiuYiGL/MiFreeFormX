@@ -75,4 +75,14 @@ object DataConst {
      * 平行小窗Plus，实现边刷文章，边回消息
      */
     val PARALLEL_MULTI_WINDOW_PLUS = PrefsData("parallel_multi_window_plus", false)
+
+    /**
+     * 当小窗失去焦点时会执行一些操作
+     * 0 - 默认
+     * 1 - 挂起小窗
+     * 2 - 贴边小窗
+     * 3 - 关闭小窗
+     */
+    val FREEFORM_LOSE_FOCUS_OPT_TYPE = PrefsData("freeform_lose_focus_opt_type", 0)
+    val freeformLoseFocusOptTypeString = listOf("默认", "小窗挂起", "小窗贴边", "小窗关闭")
 }

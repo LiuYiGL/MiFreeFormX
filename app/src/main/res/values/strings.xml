@@ -66,4 +66,6 @@
     <string name="max_free_form_tips">为各种MIUI13设备解除多小窗限制</string>
     <string name="woo_box_for_miui_at_authod">WooBox For MIUI @乌堆小透明</string>
     <string name="woo_box_for_miui_tips">基于 MIUI13（Android12）适配的系统拓展Xposed模块</string>
+    <string name="freeform_lose_focus_opt">小窗失去焦点时行为</string>
+    <string name="freeform_lose_focus_opt_tips">点击小窗外时触发小窗行为，多小窗情景下谨慎使用</string>
 </resources>
