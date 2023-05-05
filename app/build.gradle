@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "org.liuyi.mifreeformx"
-        minSdk 29
+        minSdk 30
         targetSdk 33
         versionCode getSelfDefinedVersion("code")
         versionName getSelfDefinedVersion("name")
