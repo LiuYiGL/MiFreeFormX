@@ -6,6 +6,7 @@ MUI小窗增强扩展模块，实现类Flyme的手势操作逻辑
 
 开发者：[酷安@LiuYi_GL](http://www.coolapk.com/u/1735098)
 
+更新日志：[Update](https://github.com/LiuYiGL/MiFreeFormX/blob/master/update_log.md)
 
 ## 使用环境
 
