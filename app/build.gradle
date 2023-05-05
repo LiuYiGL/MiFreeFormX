@@ -70,15 +70,29 @@ dependencies {
     implementation 'com.blankj:utilcodex:1.31.1'
 }
 
-static def getSelfDefinedVersion(type) {
+boolean isRelease() {
+    for (String taskName : gradle.startParameter.taskNames) {
+        if (taskName.contains("Release") | taskName.contains("release")) {
+            return true
+        }
+    }
+    return false
+}
+
+def getSelfDefinedVersion(type) {
     int aa = 1
     int bb = 0  // 0-99
-    int cc = 5  // 0-99
+    int cc = 6  // 0-99
 
     if ("code" == type) {
         aa * 10000 + bb * 100 + cc
     } else if ("name" == type) {
-        String today = new Date().format("yy.MM.dd.HHmmss")
-        "$today-beta"
+        if (isRelease()) {
+            String today = new Date().format("yy.MM.dd.HH")
+            "V$today"
+        } else {
+            String today = new Date().format("yy.MM.dd.HHmmss")
+            "$today-beta"
+        }
     }
 }
