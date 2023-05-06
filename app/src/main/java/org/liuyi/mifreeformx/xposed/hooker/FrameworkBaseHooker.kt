@@ -179,6 +179,7 @@ object FrameworkBaseHooker : YukiBaseHooker() {
          * 对 系统 启动的Activity进行 管控，系统PendingIntent会send到这里，通常都是通知
          * 1. 通知
          * 2. 非双开的微信分享
+         * 3. 媒体存储设备的活动
          * "com.android.server.wm.ActivityStartController#startActivityInPackage"
          */
         "com.android.server.wm.ActivityStartController".hook {
@@ -193,7 +194,9 @@ object FrameworkBaseHooker : YukiBaseHooker() {
 
                     val callingPackage = args[3] as? String?
 
-                    if (context != null) {
+                    if (context != null
+                        && callingPackage != "com.android.providers.media.module"   // 排除【媒体存储设备】
+                    ) {
                         if (isShareToApp(callingPackage, intent)) {
                             by(this, DataConst.SHARE_TO_APP) {
                                 val mOriginalOptions =
