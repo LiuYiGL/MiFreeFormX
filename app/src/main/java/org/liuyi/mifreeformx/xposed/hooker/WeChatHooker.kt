@@ -1,12 +1,10 @@
 package org.liuyi.mifreeformx.xposed.hooker
 
-import android.app.Activity
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.log.loggerD
 import com.highcapable.yukihookapi.hook.type.java.ArrayListClass
 import org.liuyi.mifreeformx.DataConst
-import org.liuyi.mifreeformx.utils.by
 
 /**
  * @Author: Liuyi
@@ -24,7 +22,7 @@ object WeChatHooker : YukiBaseHooker() {
                 injectMember {
                     method { name("onCreate") }
                     beforeHook {
-                        by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
+                        if (prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)) {
                             instanceClass.field { type(ArrayListClass) }.giveAll().forEach {
                                 (it.get(null) as? MutableList<*>)?.clear()
                             }

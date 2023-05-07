@@ -36,32 +36,6 @@ fun Bundle.toMultiWidow(context: Context? = null): Bundle {
     return this
 }
 
-fun PackageParam.by(
-    hookParam: HookParam,
-    prefsData: PrefsData<Boolean>,
-    block: HookParam.() -> Unit
-) {
-    if (prefs.direct().get(prefsData)) {
-        block(hookParam)
-    }
-}
-
-fun PackageParam.byAll(
-    hookParam: HookParam, vararg pds: PrefsData<Boolean>, block: HookParam.() -> Unit
-) {
-    if (pds.all { prefs.direct().get(it) }) {
-        block(hookParam)
-    }
-}
-
-fun PackageParam.byAny(
-    hookParam: HookParam, vararg pds: PrefsData<Boolean>, block: HookParam.() -> Unit
-) {
-    if (pds.any { prefs.direct().get(it) }) {
-        block(hookParam)
-    }
-}
-
 fun ActivityInfo.isResizeableModeExt(): Boolean {
     val mode = ActivityInfoClass.field { name("resizeMode") }.get(this).int()
     return ActivityInfoClass.method { name("isResizeableMode") }.get().invoke<Boolean>(mode)

@@ -114,7 +114,7 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                     if (isInBlacklist(context, intent)) return@beforeHook
 
                     if (context != null) {
-                        by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
+                        if (prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)) {
                             if (caller == "com.miui.touchassistant" || caller == "com.miui.securitycenter") {
                                 if (!intent.isSameApp(caller) && intent.action == Intent.ACTION_MAIN) {
                                     intent.forceFreeFromMode()
@@ -122,20 +122,18 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                                 }
                             }
                         }
-                        by(this, DataConst.APP_JUMP) {
-                            if (isAppJump(args[0], caller, intent, context)) {
-                                intent.forceFreeFromMode()
-                            }
+                        if (prefs.get(DataConst.APP_JUMP)
+                            && isAppJump(args[0], caller, intent, context)
+                        ) {
+                            intent.forceFreeFromMode()
                         }
-                        by(this, DataConst.SHARE_TO_APP) {
-                            // 开启了分享至应用
-                            if (isShareToApp(args[1] as? String?, intent)) {
-                                intent.forceFreeFromMode()
-                                intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-                                // 强制添加 new task 标签
-                                by(this, DataConst.SHARE_TO_APP_FORCE_NEW_TASK) {
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
+                        if (prefs.get(DataConst.SHARE_TO_APP)
+                            && isShareToApp(args[1] as? String?, intent)
+                        ) {
+                            intent.forceFreeFromMode()
+                            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                            if (prefs.get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             }
                         }
                         if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
@@ -151,17 +149,35 @@ object FrameworkBaseHooker : YukiBaseHooker() {
             injectMember {
                 method { name("startActivityAsCaller") }
                 beforeHook {
-                    by(this, DataConst.SHARE_TO_APP) {
+                    if (prefs.get(DataConst.SHARE_TO_APP)) {
                         val context = instance.getFieldValueOrNull("mContext") as? Context?
                         val intent = Intent(args[2] as? Intent?)
                         args[2] = intent
-                        if (isInBlacklist(context, intent)) return@by
-                        if (context != null) {
+                        if (!isInBlacklist(context, intent) && context != null) {
                             if (isShareToApp(args[1] as? String?, intent)) {
                                 // 开启分享应用
                                 intent.forceFreeFromMode()
                                 // 强制添加 new task 标签
-                                by(this, DataConst.SHARE_TO_APP_FORCE_NEW_TASK) {
+                                if (prefs.get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                }
+                            }
+                            if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
+                                args[9] = args[9] ?: getBasicBundle()
+                                intent.setFreeFromBundle(args[9] as Bundle, context)
+                            }
+                        }
+                    }
+                    if (prefs.get(DataConst.SHARE_TO_APP)) {
+                        val context = instance.getFieldValueOrNull("mContext") as? Context?
+                        val intent = Intent(args[2] as? Intent?)
+                        args[2] = intent
+                        if (!isInBlacklist(context, intent) && context != null) {
+                            if (isShareToApp(args[1] as? String?, intent)) {
+                                // 开启分享应用
+                                intent.forceFreeFromMode()
+                                // 强制添加 new task 标签
+                                if (prefs.get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
                                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                                 }
                             }
@@ -194,11 +210,12 @@ object FrameworkBaseHooker : YukiBaseHooker() {
 
                     val callingPackage = args[3] as? String?
 
-                    if (context != null
+                    if (
+                        context != null
                         && callingPackage != "com.android.providers.media.module"   // 排除【媒体存储设备】
                     ) {
                         if (isShareToApp(callingPackage, intent)) {
-                            by(this, DataConst.SHARE_TO_APP) {
+                            if (prefs.get(DataConst.SHARE_TO_APP)) {
                                 val mOriginalOptions =
                                     (args[11]?.getFieldValueOrNull("mOriginalOptions") as? ActivityOptions?)
                                 mOriginalOptions?.setLaunchWindowingModeExt(5)
@@ -206,7 +223,7 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                                     MiuiMultiWindowUtils.getFreeformRect(context)
                             }
                         } else {
-                            by(this, DataConst.PARALLEL_MULTI_WINDOW_PLUS) {
+                            if (prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)) {
                                 intent.removeFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
                             }

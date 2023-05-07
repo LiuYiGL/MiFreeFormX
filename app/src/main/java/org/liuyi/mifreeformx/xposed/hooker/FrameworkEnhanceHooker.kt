@@ -3,8 +3,6 @@ package org.liuyi.mifreeformx.xposed.hooker
 import android.content.Intent
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.liuyi.mifreeformx.DataConst
-import org.liuyi.mifreeformx.utils.by
-import org.liuyi.mifreeformx.utils.byAny
 
 /**
  * @Author: Liuyi
@@ -20,22 +18,12 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
          */
         "android.util.MiuiMultiWindowAdapter".hook {
             injectMember {
-                method { name("getFreeformBlackList") }
+                method { name { it.startsWith("getFreeformBlackList") } }
                 afterHook {
-                    byAny(
-                        this, DataConst.DISABLE_FREEFORM_BLACKLIST, DataConst.LONG_PRESS_TILE
+                    if (prefs.get(DataConst.DISABLE_FREEFORM_BLACKLIST)
+                        || prefs.get(DataConst.LONG_PRESS_TILE)
                     ) {
-                        (result as MutableList<*>).apply { clear() }
-                    }
-                }
-            }
-            injectMember {
-                method { name("getFreeformBlackListFromCloud") }
-                afterHook {
-                    byAny(
-                        this, DataConst.DISABLE_FREEFORM_BLACKLIST, DataConst.LONG_PRESS_TILE
-                    ) {
-                        (result as MutableList<*>).apply { clear() }
+                        (result as MutableList<*>).clear()
                     }
                 }
             }
@@ -46,7 +34,7 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
             injectMember {
                 method { name("isResizeable") }
                 beforeHook {
-                    by(this, DataConst.FORCE_ACTIVITY_RESIZEABLE) {
+                    if (prefs.get(DataConst.FORCE_ACTIVITY_RESIZEABLE)) {
                         resultTrue()
                     }
                 }
@@ -57,7 +45,7 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
             injectMember {
                 method { name("supportFreeform") }
                 beforeHook {
-                    by(this, DataConst.FORCE_ACTIVITY_RESIZEABLE) {
+                    if (prefs.get(DataConst.FORCE_ACTIVITY_RESIZEABLE)) {
                         resultTrue()
                     }
                 }
@@ -67,21 +55,21 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
         // 解除 小窗应用数量控制
         "com.android.server.wm.MiuiFreeFormStackDisplayStrategy".hook {
             injectMember {
-                method { name("getMaxMiuiFreeFormStackCount") }
+                method { name { it.startsWith("getMaxMiuiFreeFormStackCount") } }
                 beforeHook {
-                    by(this, DataConst.LIFT_WINDOW_NUM_LIMIT) {
+                    if (prefs.get(DataConst.LIFT_WINDOW_NUM_LIMIT)) {
                         result = 128
                     }
                 }
             }
         }
 
-        // 禁用小窗位置偏移 android.util.MiuiMultiWindowUtils#avoidIfNeeded
+        // 禁用小窗位置偏移 android.util.MiuiMultiWindowUtils#avoidAsPossible
         "android.util.MiuiMultiWindowUtils".hook {
             injectMember {
-                method { name("avoidIfNeeded") }
+                method { name("avoidAsPossible") }
                 beforeHook {
-                    by(this, DataConst.DISABLE_MULTI_OFFSET) {
+                    if (prefs.get(DataConst.DISABLE_MULTI_OFFSET)) {
                         resultNull()
                     }
                 }
@@ -95,9 +83,7 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
             injectMember {
                 method { name("buildStartIntent") }
                 afterHook {
-                    byAny(this, DataConst.MAIN_SWITCH) {
-                        result<Intent>()?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
+                    result<Intent>()?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 }
             }
         }

@@ -1,34 +1,28 @@
 package org.liuyi.mifreeformx.xposed.hooker
 
 import android.annotation.SuppressLint
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.highcapable.yukihookapi.hook.factory.field
 import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.intent_extra.forceFreeFromMode
+import org.liuyi.mifreeformx.proxy.systemui.CommonUtil
+import org.liuyi.mifreeformx.proxy.systemui.CentralSurfacesImpl
 import org.liuyi.mifreeformx.utils.*
+import org.liuyi.mifreeformx.xposed.base.LyBaseHooker
 
 /**
  * @Author: Liuyi
  * @Date: 2023/04/19/23:27:09
  * @Description: 可用作状态栏上的各种小窗打开，点击通知、长按快捷方式
  */
-object SystemUiHooker : YukiBaseHooker() {
+object SystemUiHooker : LyBaseHooker() {
 
     @SuppressLint("QueryPermissionsNeeded")
     override fun onHook() {
         var context: Context? = null
 
-        val commonUtilClass = "com.miui.systemui.util.CommonUtil".toClass()
-        val getTopActivity: () -> ComponentName? = {
-            commonUtilClass.method { name("getTopActivity") }.get().invoke<ComponentName>()
-        }
-
-        val coreStartableClass = "com.android.systemui.CoreStartable".toClass()
         /**
          * Hook com.android.systemui.statusbar.phone.CentralSurfacesImpl#startActivityDismissingKeyguard
          * (android.content.Intent, boolean, boolean, boolean, com.android.systemui.plugins.ActivityStarter.Callback,
@@ -43,23 +37,20 @@ object SystemUiHooker : YukiBaseHooker() {
                     paramCount(8)
                 }
                 beforeHook {
-                    by(this, DataConst.LONG_PRESS_TILE) {
+                    if (prefs.get(DataConst.LONG_PRESS_TILE)) {
                         loggerD(msg = "${args.asList()}")
                         var intent = args[0] as? Intent?
-                        context = context ?: coreStartableClass.field { name("mContext") }
-                            .get(instance).any() as? Context?
+                        context = context ?: instance.getProxyAs<CentralSurfacesImpl>().mContext
                         if (intent != null && context != null) {
                             // 备份Intent，防止SB的系统用同一个实例吃遍天下
                             args[0] = Intent(intent)
                             intent = args[0] as Intent
-                            val topActivity = getTopActivity()
+                            val topActivity = CommonUtil.proxy.getTopActivity()
                             val componentName = intent.resolveActivity(context!!.packageManager)
                             loggerD(msg = "$topActivity and $componentName")
                             // 如果是顶部App 则不处理
-                            if (topActivity?.packageName == componentName.packageName) return@by
-                            if (prefs.direct().get(DataConst.FORCE_CONTROL_ALL_OPEN)
-                                || isTile(intent)
-                            ) {
+                            if (topActivity?.packageName == componentName.packageName) return@beforeHook
+                            if (prefs.get(DataConst.FORCE_CONTROL_ALL_OPEN) || isTile(intent)) {
                                 intent.forceFreeFromMode()
                                 var flag = args[5] as Int
                                 flag = flag or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -82,7 +73,7 @@ object SystemUiHooker : YukiBaseHooker() {
                 method { name("startNotificationIntent") }
                 beforeHook {
                     loggerD(msg = "${this.args.asList()}")
-                    by(this, DataConst.OPEN_NOTICE) {
+                    if (prefs.get(DataConst.OPEN_NOTICE)) {
                         // 加载类
                         val dependencyClass = "com.android.systemui.Dependency".toClass()
                         val appMiniWindowManagerClass =
@@ -114,7 +105,7 @@ object SystemUiHooker : YukiBaseHooker() {
             injectMember {
                 method { name("canSlide") }
                 beforeHook {
-                    by(this, DataConst.NOTIFY_LIMIT_REMOVE_SMALL_WINDOW) {
+                    if (prefs.get(DataConst.NOTIFY_LIMIT_REMOVE_SMALL_WINDOW)) {
                         resultTrue()
                     }
                 }
@@ -129,7 +120,7 @@ object SystemUiHooker : YukiBaseHooker() {
             injectMember {
                 method { name("canNotificationSlide") }
                 beforeHook {
-                    by(this, DataConst.NOTIFY_LIMIT_REMOVE_SMALL_WINDOW) {
+                    if (prefs.get(DataConst.NOTIFY_LIMIT_REMOVE_SMALL_WINDOW)) {
                         resultTrue()
                     }
                 }
