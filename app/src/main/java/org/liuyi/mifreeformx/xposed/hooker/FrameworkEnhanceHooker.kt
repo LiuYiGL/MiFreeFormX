@@ -52,13 +52,28 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
             }
         }
 
-        // 解除 小窗应用数量控制
+        /**
+         * 去除小窗数量限制
+         */
         "com.android.server.wm.MiuiFreeFormStackDisplayStrategy".hook {
             injectMember {
-                method { name { it.startsWith("getMaxMiuiFreeFormStackCount") } }
+                method { name ("getMaxMiuiFreeFormStackCount") }
                 beforeHook {
                     if (prefs.get(DataConst.LIFT_WINDOW_NUM_LIMIT)) {
                         result = 128
+                    }
+                }
+            }
+        }
+        /**
+         * 去除小窗数量限制
+         */
+        "com.android.server.wm.MiuiFreeFormManagerService".hook {
+            injectMember {
+                method { name("getCurrentUnReplaceFreeform") }
+                beforeHook {
+                    if (prefs.get(DataConst.LIFT_WINDOW_NUM_LIMIT)) {
+                        result = mutableListOf<Any>()
                     }
                 }
             }
