@@ -77,7 +77,7 @@ boolean isRelease() {
 def getSelfDefinedVersion(type) {
     int aa = 1
     int bb = 0  // 0-99
-    int cc = 7  // 0-99
+    int cc = 8  // 0-99
 
     if ("code" == type) {
         aa * 10000 + bb * 100 + cc
