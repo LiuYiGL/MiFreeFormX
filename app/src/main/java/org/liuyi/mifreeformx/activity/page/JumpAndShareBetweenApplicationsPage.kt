@@ -3,6 +3,7 @@ package org.liuyi.mifreeformx.activity.page
 import android.annotation.SuppressLint
 import cn.fkj233.ui.activity.annotation.BMPage
 import cn.fkj233.ui.activity.view.TextSummaryV
+import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.R
 
@@ -27,6 +28,14 @@ class JumpAndShareBetweenApplicationsPage : MyBasePage() {
             ),
             createSwitchV(DataConst.APP_JUMP)
         )
+        TextSummaryWithArrow(TextSummaryV(text = "源黑名单", tips = "不使用小窗处理打开其他应用") {
+            AppSelectPage.currentBlackList = BlackList.AppJumpSourceBlacklist
+            showFragment("AppSelectPage")
+        })
+        TextSummaryWithArrow(TextSummaryV(text = "目标黑名单", tips = "对将打开的应用不处理") {
+            AppSelectPage.currentBlackList = BlackList.AppJumpTargetBlacklist
+            showFragment("AppSelectPage")
+        })
 
         Line()
         TitleText(textId = R.string.share_between_applications)
@@ -44,5 +53,13 @@ class JumpAndShareBetweenApplicationsPage : MyBasePage() {
             ),
             createSwitchV(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)
         )
+        TextSummaryWithArrow(TextSummaryV(text = "源黑名单", tips = "不处理当前应用的分享") {
+            AppSelectPage.currentBlackList = BlackList.AppShareSourceBlacklist
+            showFragment("AppSelectPage")
+        })
+        TextSummaryWithArrow(TextSummaryV(text = "目标黑名单", tips = "不处理分享的目标应用") {
+            AppSelectPage.currentBlackList = BlackList.AppShareTargetBlacklist
+            showFragment("AppSelectPage")
+        })
     }
 }

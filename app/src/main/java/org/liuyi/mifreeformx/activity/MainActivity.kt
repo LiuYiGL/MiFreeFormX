@@ -3,7 +3,9 @@ package org.liuyi.mifreeformx.activity
 import android.os.Bundle
 import cn.fkj233.ui.activity.MIUIActivity
 import cn.fkj233.ui.dialog.MIUIDialog
+import com.blankj.utilcode.util.AppUtils
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.factory.prefs
 import org.liuyi.mifreeformx.R
 import org.liuyi.mifreeformx.activity.page.*
 
@@ -14,6 +16,10 @@ import org.liuyi.mifreeformx.activity.page.*
  */
 class MainActivity : MIUIActivity() {
 
+    companion object {
+        lateinit var appsInfo: Any
+    }
+
     init {
         registerPage(MainPage::class.java)
         registerPage(NotificationAndControlCenterPage::class.java)
@@ -22,6 +28,7 @@ class MainActivity : MIUIActivity() {
         registerPage(MiscellaneousPage::class.java)
         registerPage(MenuPage::class.java)
         registerPage(AboutPage::class.java)
+        registerPage(AppSelectPage::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

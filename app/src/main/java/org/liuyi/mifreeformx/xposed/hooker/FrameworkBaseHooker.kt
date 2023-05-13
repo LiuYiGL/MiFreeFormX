@@ -1,18 +1,23 @@
 package org.liuyi.mifreeformx.xposed.hooker
 
 import android.annotation.SuppressLint
-import android.app.ActivityOptions
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.log.loggerD
+import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.intent_extra.FreeFormIntent
 import org.liuyi.mifreeformx.intent_extra.forceFreeFromMode
 import org.liuyi.mifreeformx.intent_extra.getFreeFormMode
 import org.liuyi.mifreeformx.intent_extra.setFreeFromBundle
+import org.liuyi.mifreeformx.proxy.framework.ActivityTaskManagerService
+import org.liuyi.mifreeformx.proxy.framework.RootWindowContainer
+import org.liuyi.mifreeformx.proxy.framework.SafeActivityOptions
 import org.liuyi.mifreeformx.utils.*
+import org.liuyi.mifreeformx.xposed.base.LyBaseHooker
+import org.liuyi.mifreeformx.xposed.operation.AppJumpOpt
+import org.liuyi.mifreeformx.xposed.operation.AppShareOpt
+import org.liuyi.mifreeformx.xposed.operation.ParallelSmallWindowOpt
 
 /**
  * @Author: Liuyi
@@ -21,80 +26,13 @@ import org.liuyi.mifreeformx.utils.*
  */
 @SuppressLint("QueryPermissionsNeeded")
 
-object FrameworkBaseHooker : YukiBaseHooker() {
-
-    private val targetBlacklist =
-        listOf("com.android.camera", "com.miui.tsmclient", "com.lbe.security.miui")
-
-    // 禁止小窗黑名单
-    private fun isInBlacklist(context: Context? = null, intent: Intent?): Boolean {
-        intent ?: return false
-        intent.component?.let {
-            if (targetBlacklist.contains(it.packageName)) return true
-        }
-        intent.`package`?.let {
-            if (targetBlacklist.contains(it)) return true
-        }
-        context ?: return false
-        context.packageManager?.let {
-            val componentName = intent.resolveActivity(it)
-            componentName?.run {
-                if (targetBlacklist.contains(packageName)) return true
-            }
-        }
-        return false
-    }
-
-    // 应用间跳转
-    private fun isAppJump(
-        callingThread: Any?, callingPackage: String?, intent: Intent, context: Context
-    ): Boolean {
-        // 排除系统调用
-        callingThread ?: return false
-        // 排除如，系统后台进入，获取桌面进入
-        if (intent.flags and Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED != 0) return false
-        if (callingPackage == "com.miui.securityadd") return false
-        if (intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK != 0) {
-            // 包含 new 标签
-            val componentName = intent.component ?: intent.resolveActivity(context.packageManager)
-            loggerD(msg = "$componentName")
-            // 修复微信分享回调导致源activity使用小窗
-            if (componentName.className.endsWith(".wxapi.WXEntryActivity")) return false
-            componentName?.packageName?.let { name ->
-                loggerD(msg = name)
-                if (callingPackage != name) {
-                    // 判断为应用间跳转
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    // 应用间分享
-    private fun isShareToApp(callingPackage: String?, intent: Intent?): Boolean {
-        if (intent?.`package` == callingPackage) return false
-        intent?.action.let {
-            if (it == Intent.ACTION_SEND) return true
-            // 使用全屏打开 miui 系统选择分享界面
-            if (it == "miui.intent.action.MIUI_CHOOSER") return false
-        }
-        intent?.component?.let {
-            // 微信分享sdk
-            if (it.className == "com.tencent.mm.plugin.base.stub.WXEntryActivity") return true
-            if (it.packageName == callingPackage) return false
-        }
-        if (intent?.clipData != null) return true
-        intent?.data?.let {
-            // QQ分享sdk
-            if (it.scheme == "mqqapi" && it.host == "share") return true
-        }
-        return false
-    }
+object FrameworkBaseHooker : LyBaseHooker() {
 
 
     override fun onHook() {
 
+        var rootWindowContainer: RootWindowContainer? = null
+        val activityTaskManagerService: ActivityTaskManagerService? = null
         "com.android.server.wm.ActivityTaskManagerService".hook {
             /**
              * 用户应用调用会来到这里
@@ -109,37 +47,39 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                     // 全局管控，只要在intent设置了 FreeFormIntent 都会优先判断是否开启小窗
                     val caller = args[1] as String?
                     val intent = Intent(args[3] as? Intent?)
+                    val atmService = activityTaskManagerService ?: instance.getProxyAs()
+                    rootWindowContainer = rootWindowContainer ?: atmService.mRootWindowContainer
                     args[3] = intent
-                    val context = instance.getFieldValueOrNull("mContext") as Context?
-                    if (isInBlacklist(context, intent)) return@beforeHook
+                    val context = atmService.mContext ?: return@beforeHook
+                    val callee = intent.resolveActivity(context.packageManager)?.packageName ?: return@beforeHook
 
-                    if (context != null) {
-                        if (prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)) {
-                            if (caller == "com.miui.touchassistant" || caller == "com.miui.securitycenter") {
-                                if (!intent.isSameApp(caller) && intent.action == Intent.ACTION_MAIN) {
-                                    intent.forceFreeFromMode()
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-                                }
-                            }
-                        }
-                        if (prefs.get(DataConst.APP_JUMP)
-                            && isAppJump(args[0], caller, intent, context)
-                        ) {
-                            intent.forceFreeFromMode()
-                        }
-                        if (prefs.get(DataConst.SHARE_TO_APP)
-                            && isShareToApp(args[1] as? String?, intent)
-                        ) {
-                            intent.forceFreeFromMode()
-                            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-                            if (prefs.get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            }
-                        }
-                        if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
-                            args[10] = args[10] ?: getBasicBundle()
-                            intent.setFreeFromBundle(args[10] as Bundle, context)
-                        }
+                    if (prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)
+                        && ParallelSmallWindowOpt.isFromSidebar(caller, intent)
+                        && !BlackList.ParallelFreeformBlacklist.contains(prefs, callee)
+                    ) {
+                        ParallelSmallWindowOpt.handle(intent, atmService, rootWindowContainer)
+                    }
+
+                    if (prefs.get(DataConst.APP_JUMP)
+                        && AppJumpOpt.isAppJump(args[0], caller, intent, context)
+                        && caller != null
+                        && !BlackList.AppJumpSourceBlacklist.contains(prefs, caller)
+                        && !BlackList.AppJumpTargetBlacklist.contains(prefs, callee)
+                    ) {
+                        intent.forceFreeFromMode()
+                    }
+
+                    if (prefs.get(DataConst.SHARE_TO_APP)
+                        && AppShareOpt.isShareToApp(args[1] as? String?, intent)
+                        && caller != null
+                        && !BlackList.AppShareSourceBlacklist.contains(prefs, caller)
+                        && !BlackList.AppShareTargetBlacklist.contains(prefs, callee)
+                    ) {
+                        AppShareOpt.handle(intent)
+                    }
+                    if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
+                        args[10] = args[10] ?: getBasicBundle()
+                        intent.setFreeFromBundle(args[10] as Bundle, context)
                     }
                 }
             }
@@ -149,43 +89,21 @@ object FrameworkBaseHooker : YukiBaseHooker() {
             injectMember {
                 method { name("startActivityAsCaller") }
                 beforeHook {
-                    if (prefs.get(DataConst.SHARE_TO_APP)) {
-                        val context = instance.getFieldValueOrNull("mContext") as? Context?
-                        val intent = Intent(args[2] as? Intent?)
-                        args[2] = intent
-                        if (!isInBlacklist(context, intent) && context != null) {
-                            if (isShareToApp(args[1] as? String?, intent)) {
-                                // 开启分享应用
-                                intent.forceFreeFromMode()
-                                // 强制添加 new task 标签
-                                if (prefs.get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                            }
-                            if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
-                                args[9] = args[9] ?: getBasicBundle()
-                                intent.setFreeFromBundle(args[9] as Bundle, context)
-                            }
-                        }
+                    val atmService = activityTaskManagerService ?: instance.getProxyAs()
+                    val context = atmService.mContext ?: return@beforeHook
+                    val intent = Intent(args[2] as? Intent?)
+                    val caller = args[1] as? String?
+                    args[2] = intent
+
+                    if (prefs.get(DataConst.SHARE_TO_APP)
+                        && AppShareOpt.isShareToApp(caller, intent)
+                        && !BlackList.AppShareTargetBlacklist.contains(prefs, intent, context)
+                    ) {
+                        AppShareOpt.handle(intent)
                     }
-                    if (prefs.get(DataConst.SHARE_TO_APP)) {
-                        val context = instance.getFieldValueOrNull("mContext") as? Context?
-                        val intent = Intent(args[2] as? Intent?)
-                        args[2] = intent
-                        if (!isInBlacklist(context, intent) && context != null) {
-                            if (isShareToApp(args[1] as? String?, intent)) {
-                                // 开启分享应用
-                                intent.forceFreeFromMode()
-                                // 强制添加 new task 标签
-                                if (prefs.get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
-                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                }
-                            }
-                            if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
-                                args[9] = args[9] ?: getBasicBundle()
-                                intent.setFreeFromBundle(args[9] as Bundle, context)
-                            }
-                        }
+                    if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
+                        args[9] = args[9] ?: getBasicBundle()
+                        intent.setFreeFromBundle(args[9] as Bundle, context)
                     }
                 }
             }
@@ -205,29 +123,27 @@ object FrameworkBaseHooker : YukiBaseHooker() {
                     loggerD(msg = "${args.asList()}")
                     val intent = Intent(args[5] as? Intent?)
                     args[5] = intent
-                    val context = instanceOrNull?.getFieldValueOrNull("mService")
-                        ?.getFieldValueOrNull("mContext") as? Context?
-
-                    val callingPackage = args[3] as? String?
-
-                    if (
-                        context != null
-                        && callingPackage != "com.android.providers.media.module"   // 排除【媒体存储设备】
+                    val realCallingPid = args[1] as Int
+                    val atmService = activityTaskManagerService ?: instance.getFieldValueByName("mService").getProxyAs()
+                    rootWindowContainer = rootWindowContainer ?: atmService.mRootWindowContainer
+                    val caller = args[3] as? String?
+                    val context = atmService.mContext ?: return@beforeHook
+                    val safeActivityOptions = args[11]?.getProxyAs<SafeActivityOptions>() ?: return@beforeHook
+                    if (AppShareOpt.isShareToApp(caller, intent) && prefs.get(DataConst.SHARE_TO_APP)
+                        && !BlackList.AppShareTargetBlacklist.contains(prefs, intent, context)
                     ) {
-                        if (isShareToApp(callingPackage, intent)) {
-                            if (prefs.get(DataConst.SHARE_TO_APP)) {
-                                val mOriginalOptions =
-                                    (args[11]?.getFieldValueOrNull("mOriginalOptions") as? ActivityOptions?)
-                                mOriginalOptions?.setLaunchWindowingModeExt(5)
-                                mOriginalOptions?.launchBounds =
-                                    MiuiMultiWindowUtils.getFreeformRect(context)
-                            }
-                        } else {
-                            if (prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)) {
-                                intent.removeFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
-                            }
+                        safeActivityOptions.mOriginalOptions?.apply {
+                            setLaunchWindowingModeExt(5)
+                            launchBounds = MiuiMultiWindowUtils.getFreeformRect(context)
                         }
+                    }
+                    if (
+                        prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)
+                        && realCallingPid == context.getPidFromPackageNameExt("com.android.systemui")
+                        && !BlackList.ParallelFreeformBlacklist.contains(prefs, intent, context)
+                        && safeActivityOptions.mOriginalOptions?.getLaunchWindowingModeExt() == 5
+                    ) {
+                        ParallelSmallWindowOpt.handle(intent, atmService, rootWindowContainer)
                     }
                 }
             }

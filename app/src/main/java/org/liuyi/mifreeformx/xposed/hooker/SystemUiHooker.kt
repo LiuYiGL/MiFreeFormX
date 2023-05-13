@@ -1,14 +1,18 @@
 package org.liuyi.mifreeformx.xposed.hooker
 
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.highcapable.yukihookapi.hook.factory.method
 import com.highcapable.yukihookapi.hook.log.loggerD
+import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.intent_extra.forceFreeFromMode
-import org.liuyi.mifreeformx.proxy.systemui.CommonUtil
+import org.liuyi.mifreeformx.proxy.systemui.AppMiniWindowManager
 import org.liuyi.mifreeformx.proxy.systemui.CentralSurfacesImpl
+import org.liuyi.mifreeformx.proxy.systemui.CommonUtil
+import org.liuyi.mifreeformx.proxy.systemui.Dependency
+import org.liuyi.mifreeformx.proxy.systemui.MiuiExpandableNotificationRow
 import org.liuyi.mifreeformx.utils.*
 import org.liuyi.mifreeformx.xposed.base.LyBaseHooker
 
@@ -49,7 +53,9 @@ object SystemUiHooker : LyBaseHooker() {
                             val componentName = intent.resolveActivity(context!!.packageManager)
                             loggerD(msg = "$topActivity and $componentName")
                             // 如果是顶部App 则不处理
-                            if (topActivity?.packageName == componentName.packageName) return@beforeHook
+                            if (topActivity?.packageName == componentName.packageName
+                                || BlackList.TileBlacklist.contains(prefs, componentName.packageName)
+                            ) return@beforeHook
                             if (prefs.get(DataConst.FORCE_CONTROL_ALL_OPEN) || isTile(intent)) {
                                 intent.forceFreeFromMode()
                                 var flag = args[5] as Int
@@ -75,23 +81,18 @@ object SystemUiHooker : LyBaseHooker() {
                     loggerD(msg = "${this.args.asList()}")
                     if (prefs.get(DataConst.OPEN_NOTICE)) {
                         // 加载类
-                        val dependencyClass = "com.android.systemui.Dependency".toClass()
                         val appMiniWindowManagerClass =
                             "com.android.systemui.statusbar.notification.policy.AppMiniWindowManager".toClass()
-
                         // 逻辑开始
-                        val appMiniWindowManager = dependencyClass.method {
-                            name("get")
-                            param(Class::class.java)
-                        }.get().call(appMiniWindowManagerClass)
+                        val appMiniWindowManager =
+                            Dependency.Proxy.get(appMiniWindowManagerClass).getProxyAs<AppMiniWindowManager>()
 
-                        appMiniWindowManagerClass.method { name("launchMiniWindowActivity") }
-                            .get(appMiniWindowManager).let {
-                                val targetPkg = args[3]?.javaClass
-                                    ?.method { name("getMiniWindowTargetPkg") }
-                                    ?.get(args[3])?.invoke<String?>()
-                                it.call(targetPkg, args[0])
-                            }
+                        args[3]?.getProxyAs<MiuiExpandableNotificationRow>()?.let {
+                            appMiniWindowManager.launchMiniWindowActivity(
+                                it.getMiniWindowTargetPkg(), args[0] as PendingIntent
+                            )
+                            resultNull()
+                        }
                     }
                 }
             }

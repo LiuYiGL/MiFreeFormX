@@ -3,6 +3,7 @@ package org.liuyi.mifreeformx.activity.page
 import android.annotation.SuppressLint
 import cn.fkj233.ui.activity.annotation.BMPage
 import cn.fkj233.ui.activity.view.TextSummaryV
+import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.R
 
@@ -47,6 +48,10 @@ class NotificationAndControlCenterPage : MyBasePage() {
             ),
             createSwitchV(DataConst.FORCE_CONTROL_ALL_OPEN)
         )
+        TextSummaryWithArrow(TextSummaryV(text = "黑名单") {
+            AppSelectPage.currentBlackList = BlackList.TileBlacklist
+            showFragment("AppSelectPage")
+        })
 
     }
 }

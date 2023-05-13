@@ -3,6 +3,7 @@ package org.liuyi.mifreeformx.activity.page
 import android.annotation.SuppressLint
 import cn.fkj233.ui.activity.annotation.BMPage
 import cn.fkj233.ui.activity.view.TextSummaryV
+import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.R
 
@@ -23,5 +24,9 @@ class ParallelSmallWindowPage : MyBasePage() {
             ),
             createSwitchV(DataConst.PARALLEL_MULTI_WINDOW_PLUS)
         )
+        TextSummaryWithArrow(TextSummaryV(text = "黑名单") {
+            AppSelectPage.currentBlackList = BlackList.ParallelFreeformBlacklist
+            showFragment("AppSelectPage")
+        })
     }
 }
