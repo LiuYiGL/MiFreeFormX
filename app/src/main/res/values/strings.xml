@@ -69,4 +69,7 @@
     <string name="freeform_lose_focus_opt">小窗失去焦点时行为</string>
     <string name="freeform_lose_focus_opt_tips">点击小窗外时触发小窗行为，多小窗情景下谨慎使用</string>
     <string name="select_app">选择应用</string>
+    <string name="discussion">讨论</string>
+    <string name="group_qq">加入 QQ内测群</string>
+    <string name="group_qq_tips">第一时间更新</string>
 </resources>

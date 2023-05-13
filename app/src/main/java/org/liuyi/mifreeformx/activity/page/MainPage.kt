@@ -12,6 +12,7 @@ import cn.fkj233.ui.activity.view.TextV
 import org.liuyi.mifreeformx.R
 import org.liuyi.mifreeformx.BuildConfig
 import org.liuyi.mifreeformx.DataConst
+import org.liuyi.mifreeformx.utils.startUriString
 
 
 /**
@@ -64,6 +65,12 @@ class MainPage : MyBasePage() {
                 if (it) PackageManager.COMPONENT_ENABLED_STATE_DISABLED else PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP
             )
+        })
+
+        Line()
+        TitleText(textId = R.string.discussion)
+        TextSummaryWithArrow(TextSummaryV(textId = R.string.group_qq) {
+            activity.startUriString("https://qm.qq.com/cgi-bin/qm/qr?k=vFmdInhwejDS4ra29weLXlNHVE-CPoMA")
         })
 
         Line()
