@@ -19,4 +19,12 @@ interface Task : ProxyInterface {
     @ProxyMethod(name = "getActivityType", isFindInSuper = true)
     fun getActivityType(): Int
 
+    @ProxyMethod(name = "getRootTask", isFindInSuper = true)
+    fun getRootTask(): Task?
+
+    @ProxyMethod(name = "moveToFront", paramCount = "1")
+    fun moveToFront(reason: String?)
+
+    @ProxyMethod(name = "moveTaskToBack", paramCount = "1")
+    fun moveTaskToBack(tr: Task?): Boolean
 }
