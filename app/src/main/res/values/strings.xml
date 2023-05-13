@@ -47,7 +47,7 @@
     <string name="open_source">开源仓库</string>
     <string name="feedback">反馈</string>
     <string name="about">关于</string>
-    <string name="donation">捐赠打赏</string>
+    <string name="donation">爱发电</string>
     <string name="donation_tips">制作不易，您的支持是我最大的动力</string>
     <string name="wechat_admiration">微信赞赏</string>
     <string name="alipay_donation">支付宝打赏</string>
@@ -72,4 +72,5 @@
     <string name="discussion">讨论</string>
     <string name="group_qq">加入 QQ内测群</string>
     <string name="group_qq_tips">第一时间更新</string>
+    <string name="donation_code">捐赠码</string>
 </resources>

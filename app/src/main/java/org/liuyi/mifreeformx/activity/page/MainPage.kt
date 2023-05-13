@@ -5,10 +5,12 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.widget.Toast
 import cn.fkj233.ui.activity.annotation.BMMainPage
 import cn.fkj233.ui.activity.view.SwitchV
 import cn.fkj233.ui.activity.view.TextSummaryV
 import cn.fkj233.ui.activity.view.TextV
+import com.highcapable.yukihookapi.hook.log.loggerE
 import org.liuyi.mifreeformx.R
 import org.liuyi.mifreeformx.BuildConfig
 import org.liuyi.mifreeformx.DataConst
@@ -75,19 +77,35 @@ class MainPage : MyBasePage() {
 
         Line()
         TitleText(textId = R.string.other)
+        TextSummaryWithArrow(
+            TextSummaryV(textId = R.string.wechat_admiration) {
+                kotlin.runCatching {
+                    activity.startActivity(wechat_admiration_intent)
+                }.exceptionOrNull()?.let {
+                    loggerE(e = it)
+                    showFragment("DonatePage")
+                }
+            }
+        )
+        TextSummaryWithArrow(
+            TextSummaryV(textId = R.string.alipay_donation) {
+                kotlin.runCatching {
+                    activity.startActivity(alipay_donate_intent)
+                }.exceptionOrNull()?.let {
+                    loggerE(e = it)
+                    Toast.makeText(activity, "请检查支付宝是否是最新版本", Toast.LENGTH_SHORT).show()
+                    showFragment("DonatePage")
+                }
+            }
+        )
+        TextSummaryWithArrow(
+            TextSummaryV(textId = R.string.donation_code, tipsId = R.string.donation_tips) {
+                showFragment("DonatePage")
+            }
+        )
         TextSummaryWithArrow(TextSummaryV(textId = R.string.about) {
             showFragment("AboutPage")
         })
-        TextSummaryWithArrow(
-            TextSummaryV(textId = R.string.wechat_admiration) {
-                activity.startActivity(wechat_admiration_intent)
-            }
-        )
-        TextSummaryWithArrow(
-            TextSummaryV(textId = R.string.alipay_donation, tipsId = R.string.donation_tips) {
-                activity.startActivity(alipay_donate_intent)
-            }
-        )
 
     }
 }

@@ -29,6 +29,7 @@ class MainActivity : MIUIActivity() {
         registerPage(MenuPage::class.java)
         registerPage(AboutPage::class.java)
         registerPage(AppSelectPage::class.java)
+        registerPage(DonatePage::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
