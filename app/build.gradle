@@ -20,6 +20,20 @@ android {
             keyPassword aliasPwd
         }
     }
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            // 显示app名称+当前版本号
+            def fileName = "MiuiFreeFormX_${variant.versionName}"
+            // 如果是debug版本，加入beta版本号
+            if (isRelease()) {
+                // 如果是release版本，直接显示
+                fileName = fileName + "_release.apk"
+            } else {
+                fileName = fileName + "_debug.apk"
+            }
+            outputFileName = fileName
+        }
+    }
     namespace 'org.liuyi.mifreeformx'
     compileSdk 33
 
@@ -87,7 +101,7 @@ def getSelfDefinedVersion(type) {
             "V$today"
         } else {
             String today = new Date().format("yy.MM.dd.HHmmss")
-            "$today-beta"
+            "$today"
         }
     }
 }
