@@ -56,7 +56,7 @@ object FreeformLoseFocusHooker : LyBaseHooker() {
                             loggerD(msg = "start ${stackProxy.instance}")
                             // 开始处理 mMiuiFreeFormActivityStackProxy
                             when (prefs.get(DataConst.FREEFORM_LOSE_FOCUS_OPT_TYPE)) {
-                                1 -> launchSmallWindow(stackProxy, mWmService)
+                                1 -> turnFreeFormToSmallWindow(stackProxy, mWmService)
                                 2 -> freeFormToPin(stackProxy, mWmService)
                                 3 -> exitApplication(stackProxy, mWmService)
                             }
@@ -66,6 +66,22 @@ object FreeformLoseFocusHooker : LyBaseHooker() {
                 }
             }
         }
+    }
+
+    /**
+     * 小窗失去焦点后，迷你小窗
+     */
+    private fun turnFreeFormToSmallWindow(
+        stack: MiuiFreeFormActivityStack,
+        mWmService: WindowManagerService
+    ) {
+        mWmService.mMiuiFreeFormGestureController
+            ?.getFieldValueOrNull("mGestureListener")
+            ?.let { mGestureListener->
+                mGestureListener.getFieldValueOrNull("mSmallFreeFormWindowMotionHelper")
+                    ?.callMethodByName("startShowFreeFormWindow", stack.instance)
+                mGestureListener.callMethodByName("turnFreeFormToSmallWindow", stack.instance)
+            }
     }
 
     /**
