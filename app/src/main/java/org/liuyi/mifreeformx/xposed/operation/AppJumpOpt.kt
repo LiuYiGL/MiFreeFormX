@@ -13,8 +13,6 @@ object AppJumpOpt {
 
     // 应用间跳转
     fun isAppJump(callingThread: Any?, callingPackage: String?, intent: Intent, context: Context): Boolean {
-        // 排除系统调用
-        callingThread ?: return false
         // 排除如，系统后台进入，获取桌面进入
         if (intent.flags and Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED != 0) return false
         if (callingPackage == "com.miui.securityadd") return false
