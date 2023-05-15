@@ -23,7 +23,7 @@ android {
     applicationVariants.all { variant ->
         variant.outputs.all {
             // 显示app名称+当前版本号
-            def fileName = "MiuiFreeFormX_${variant.versionName}"
+            def fileName = "MiuiFreeFormX_${variant.versionName}_${variant.versionCode}"
             // 如果是debug版本，加入beta版本号
             if (isRelease()) {
                 // 如果是release版本，直接显示
@@ -91,14 +91,14 @@ boolean isRelease() {
 def getSelfDefinedVersion(type) {
     int aa = 1
     int bb = 0  // 0-99
-    int cc = 8  // 0-99
+    int cc = 11  // 0-99
 
     if ("code" == type) {
         aa * 10000 + bb * 100 + cc
     } else if ("name" == type) {
         if (isRelease()) {
             String today = new Date().format("yy.MM.dd.HH")
-            "V$today"
+            "$today"
         } else {
             String today = new Date().format("yy.MM.dd.HHmmss")
             "$today"

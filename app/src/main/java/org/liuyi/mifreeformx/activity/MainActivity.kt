@@ -3,11 +3,18 @@ package org.liuyi.mifreeformx.activity
 import android.os.Bundle
 import cn.fkj233.ui.activity.MIUIActivity
 import cn.fkj233.ui.dialog.MIUIDialog
-import com.blankj.utilcode.util.AppUtils
 import com.highcapable.yukihookapi.YukiHookAPI
-import com.highcapable.yukihookapi.hook.factory.prefs
 import org.liuyi.mifreeformx.R
-import org.liuyi.mifreeformx.activity.page.*
+import org.liuyi.mifreeformx.activity.page.AboutPage
+import org.liuyi.mifreeformx.activity.page.AppSelectPage
+import org.liuyi.mifreeformx.activity.page.DonatePage
+import org.liuyi.mifreeformx.activity.page.JumpAndShareBetweenApplicationsPage
+import org.liuyi.mifreeformx.activity.page.MainPage
+import org.liuyi.mifreeformx.activity.page.MenuPage
+import org.liuyi.mifreeformx.activity.page.MiscellaneousPage
+import org.liuyi.mifreeformx.activity.page.NotificationAndControlCenterPage
+import org.liuyi.mifreeformx.activity.page.ParallelSmallWindowPage
+import org.liuyi.mifreeformx.activity.page.SizeAndPositionPage
 
 /**
  * @Author: Liuyi
@@ -15,10 +22,6 @@ import org.liuyi.mifreeformx.activity.page.*
  * @Description:
  */
 class MainActivity : MIUIActivity() {
-
-    companion object {
-        lateinit var appsInfo: Any
-    }
 
     init {
         registerPage(MainPage::class.java)
@@ -30,6 +33,7 @@ class MainActivity : MIUIActivity() {
         registerPage(AboutPage::class.java)
         registerPage(AppSelectPage::class.java)
         registerPage(DonatePage::class.java)
+        registerPage(SizeAndPositionPage::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

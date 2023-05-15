@@ -40,6 +40,7 @@ object HookEntry : IYukiHookXposedInit {
             loadApp("com.android.systemui", SystemUiHooker)
             loadApp("com.tencent.mm", WeChatHooker)
             loadSystem(FreeformLoseFocusHooker)
+            loadSystem(SizeAndPositionHooker)
         }
     }
 

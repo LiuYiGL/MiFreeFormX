@@ -53,6 +53,9 @@ class MainPage : MyBasePage() {
         TextSummaryWithArrow(TextSummaryV(textId = R.string.jump_and_share_between_applications) {
             showFragment("JumpAndShareBetweenApplicationsPage")
         })
+        TextSummaryWithArrow(TextSummaryV(textId = R.string.freeform_size_and_position) {
+            showFragment("SizeAndPosition")
+        })
         TextSummaryWithArrow(TextSummaryV(textId = R.string.parallel_small_window) {
             showFragment("ParallelSmallWindowPage")
         })

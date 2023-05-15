@@ -3,6 +3,7 @@ package org.liuyi.mifreeformx.activity.page
 import android.widget.Toast
 import androidx.annotation.StringRes
 import cn.fkj233.ui.activity.data.BasePage
+import cn.fkj233.ui.activity.data.DataBinding
 import cn.fkj233.ui.activity.view.SpinnerV
 import cn.fkj233.ui.activity.view.SwitchV
 import com.blankj.utilcode.util.AppUtils
@@ -22,8 +23,17 @@ abstract class MyBasePage : BasePage() {
             activity.prefs().edit { put(prefsData, it) }
         }
 
-    internal fun createSpinnerV(prefsData: PrefsData<Int>, textList: List<String>) =
-        SpinnerV(currentValue = textList[activity.prefs().get(prefsData)]) {
+    internal fun createSpinnerV(
+        prefsData: PrefsData<Int>,
+        textList: List<String>,
+        dataBindingSend: DataBinding.Binding.Send? = null,
+        dataBindingRecv: DataBinding.Binding.Recv? = null,
+    ) =
+        SpinnerV(
+            currentValue = textList[activity.prefs().get(prefsData)],
+            dataBindingSend = dataBindingSend,
+            dataBindingRecv = dataBindingRecv
+        ) {
             textList.forEachIndexed { index, text ->
                 add(text) { activity.prefs().edit { put(prefsData, index) } }
             }

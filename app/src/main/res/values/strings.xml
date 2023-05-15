@@ -73,4 +73,5 @@
     <string name="group_qq">加入 QQ内测群</string>
     <string name="group_qq_tips">第一时间更新</string>
     <string name="donation_code">捐赠码</string>
+    <string name="freeform_size_and_position">小窗位置与大小</string>
 </resources>

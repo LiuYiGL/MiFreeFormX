@@ -20,13 +20,6 @@ class MiscellaneousPage : MyBasePage() {
             TextV(textId = R.string.disable_window_blacklist),
             createSwitchV(DataConst.DISABLE_FREEFORM_BLACKLIST)
         )
-        TextSummaryWithSwitch(
-            TextSummaryV(
-                textId = R.string.disable_window_offset,
-                tipsId = R.string.disable_window_offset_tips
-            ),
-            createSwitchV(DataConst.DISABLE_MULTI_OFFSET)
-        )
         TextWithSwitch(
             TextV(textId = R.string.lift_window_num_limit),
             createSwitchV(DataConst.LIFT_WINDOW_NUM_LIMIT)
