@@ -44,6 +44,9 @@ object FrameworkBaseHooker : LyBaseHooker() {
                 }
                 beforeHook {
                     loggerD(msg = "${this.args.asList()}")
+                    val startFlags = args[8] as Int
+                    if (startFlags == 0) return@beforeHook
+
                     // 全局管控，只要在intent设置了 FreeFormIntent 都会优先判断是否开启小窗
                     val caller = args[1] as String?
                     val intent = Intent(args[3] as? Intent?)
@@ -52,7 +55,6 @@ object FrameworkBaseHooker : LyBaseHooker() {
                     args[3] = intent
                     val context = atmService.mContext ?: return@beforeHook
                     val callee = intent.resolveActivity(context.packageManager)?.packageName ?: return@beforeHook
-
                     if (prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)
                         && ParallelSmallWindowOpt.isFromSidebar(caller, intent)
                         && !BlackList.ParallelFreeformBlacklist.contains(prefs, callee)
