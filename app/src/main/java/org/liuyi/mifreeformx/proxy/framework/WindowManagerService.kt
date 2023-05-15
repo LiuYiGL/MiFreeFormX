@@ -1,5 +1,6 @@
 package org.liuyi.mifreeformx.proxy.framework
 
+import android.content.Context
 import org.liuyi.mifreeformx.xposed.base.annotation.ProxyField
 import org.liuyi.mifreeformx.xposed.base.annotation.ProxyMethod
 import org.liuyi.mifreeformx.xposed.base.interfaces.ProxyInterface
