@@ -28,7 +28,7 @@ object SizeAndPositionHooker : LyBaseHooker() {
     val CUSTOM_HORIZONTAL_SCALE = PrefsData("custom_horizontal_scale", 0f)
 
     val OPEN_CUSTOM_SIZE_AND_POSITION = PrefsData("open_custom_size_and_position", false)
-    val OPEN_CUSTOM_SIZE_AND_POSITION_MODE = PrefsData("freeform_lose_focus_opt_type", 0)
+    val OPEN_CUSTOM_SIZE_AND_POSITION_MODE = PrefsData("open_custom_size_and_position_mode", 0)
     val openCustomSizeAndPositionModeString = listOf("关闭", "仅竖屏开启", "仅横屏开启", "始终开启")
 
 
