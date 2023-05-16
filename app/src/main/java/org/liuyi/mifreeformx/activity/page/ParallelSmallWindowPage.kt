@@ -24,8 +24,8 @@ class ParallelSmallWindowPage : MyBasePage() {
             ),
             createSwitchV(DataConst.PARALLEL_MULTI_WINDOW_PLUS)
         )
-        TextSummaryWithArrow(TextSummaryV(text = "黑名单") {
-            AppSelectPage.currentBlackList = BlackList.ParallelFreeformBlacklist
+        TextSummaryWithArrow(TextSummaryV(text = "选择应用") {
+            AppSelectPage.currentBlackList = BlackList.ParallelFreeformWhitelist
             showFragment("AppSelectPage")
         })
     }

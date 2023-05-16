@@ -55,7 +55,7 @@ object FrameworkBaseHooker : LyBaseHooker() {
 
                     if (prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)
                         && ParallelSmallWindowOpt.isFromSidebar(caller, intent)
-                        && !BlackList.ParallelFreeformBlacklist.contains(prefs, callee)
+                        && BlackList.ParallelFreeformWhitelist.contains(prefs, callee)
                     ) {
                         ParallelSmallWindowOpt.handle(intent, atmService, rootWindowContainer)
                     }
@@ -140,7 +140,7 @@ object FrameworkBaseHooker : LyBaseHooker() {
                     if (
                         prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)
                         && realCallingPid == context.getPidFromPackageNameExt("com.android.systemui")
-                        && !BlackList.ParallelFreeformBlacklist.contains(prefs, intent, context)
+                        && BlackList.ParallelFreeformWhitelist.contains(prefs, intent, context)
                         && safeActivityOptions.mOriginalOptions?.getLaunchWindowingModeExt() == 5
                     ) {
                         ParallelSmallWindowOpt.handle(intent, atmService, rootWindowContainer)

@@ -32,10 +32,10 @@ object BlackList {
         )
     )
 
-    object ParallelFreeformBlacklist : BlackListBean(
+    object ParallelFreeformWhitelist : BlackListBean(
         PrefsData(
-            "parallel_small_window_blacklist",
-            setOf("com.android.camera", "com.miui.tsmclient", "com.lbe.security.miui")
+            "parallel_small_window_whitelist",
+            setOf()
         )
     )
 
