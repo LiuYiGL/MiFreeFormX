@@ -51,7 +51,7 @@ object MiuiMultiWindowUtils {
         fun getScreenType(context: Context?): Int
 
 
-        @ProxyMethod(name= "getFreeFormScale")
+        @ProxyMethod(name= "getFreeFormScale", paramCount = "3")
         fun getFreeFormScale(vertical: Boolean, landscape: Boolean, screenType: Int): Float
     }
 }
