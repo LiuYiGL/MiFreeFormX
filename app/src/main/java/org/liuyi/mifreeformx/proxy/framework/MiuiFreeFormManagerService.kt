@@ -19,4 +19,7 @@ interface MiuiFreeFormManagerService : ProxyInterface {
 
     @ProxyMethod(name = "getMiuiFreeFormActivityStackForMiuiFB")
     fun getMiuiFreeFormActivityStackForMiuiFB(taskId: Int): MiuiFreeFormActivityStack?
+
+    @ProxyMethod(name = "getAllMiuiFreeFormActivityStack")
+    fun getAllMiuiFreeFormActivityStack(): List<Any?>
 }

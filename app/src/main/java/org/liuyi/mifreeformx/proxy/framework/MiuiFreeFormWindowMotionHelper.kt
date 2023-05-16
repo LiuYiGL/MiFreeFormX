@@ -1,7 +1,6 @@
 package org.liuyi.mifreeformx.proxy.framework
 
 import android.graphics.Rect
-import android.os.RemoteException
 import org.liuyi.mifreeformx.xposed.base.annotation.ProxyMethod
 import org.liuyi.mifreeformx.xposed.base.interfaces.ProxyInterface
 
@@ -17,4 +16,7 @@ interface MiuiFreeFormWindowMotionHelper: ProxyInterface {
 
     @ProxyMethod(name = "finishAnimationControl")
     fun finishAnimationControl(stack: MiuiFreeFormActivityStack?, bound: Rect?, scale: Float, mode: Int)
+
+    @ProxyMethod(name = "findControlFreeFormActivityStack")
+    fun findControlFreeFormActivityStack(x: Float, y: Float): MiuiFreeFormActivityStack?
 }

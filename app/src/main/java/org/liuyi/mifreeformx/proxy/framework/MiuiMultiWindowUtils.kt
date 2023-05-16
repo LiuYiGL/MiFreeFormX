@@ -3,6 +3,7 @@ package org.liuyi.mifreeformx.proxy.framework
 import android.content.Context
 import android.graphics.Rect
 import android.graphics.RectF
+import org.liuyi.mifreeformx.xposed.base.annotation.ProxyField
 import org.liuyi.mifreeformx.xposed.base.annotation.ProxyMethod
 import org.liuyi.mifreeformx.xposed.base.interfaces.ProxyInterface
 import org.liuyi.mifreeformx.xposed.hooker.FrameworkBaseHooker.toClass
@@ -18,6 +19,10 @@ object MiuiMultiWindowUtils {
     val proxy = "android.util.MiuiMultiWindowUtils".toClass().getProxyAs<MiuiMultiWindowUtils>()
 
     interface MiuiMultiWindowUtils : ProxyInterface {
+
+        @get:ProxyField(name = "MULTI_WINDOW_SWITCH_ENABLED")
+        @set:ProxyField(name = "MULTI_WINDOW_SWITCH_ENABLED")
+        var MULTI_WINDOW_SWITCH_ENABLED: Boolean
 
         @ProxyMethod(name = "hasSmallFreeform")
         fun hasSmallFreeform(): Boolean

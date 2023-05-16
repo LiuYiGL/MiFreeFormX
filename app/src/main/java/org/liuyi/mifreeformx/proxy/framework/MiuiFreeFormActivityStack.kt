@@ -35,6 +35,13 @@ interface MiuiFreeFormActivityStack : ProxyInterface {
     @set:ProxyField(name = "mStackID")
     var mStackID: Int
 
+    @get:ProxyField(name = "mFreeFormScale")
+    @set:ProxyField(name = "mFreeFormScale")
+    var mFreeFormScale: Float
+
     @ProxyMethod(name = "inPinMode")
     fun inPinMode(): Boolean
+
+    @ProxyMethod(name = "isInFreeFormMode")
+    fun isInFreeFormMode(): Boolean
 }
