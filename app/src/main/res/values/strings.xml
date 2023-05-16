@@ -74,4 +74,6 @@
     <string name="group_qq_tips">第一时间更新</string>
     <string name="donation_code">捐赠码</string>
     <string name="freeform_size_and_position">小窗位置与大小</string>
+    <string name="click_freeform_outside_action">点击小窗外行为</string>
+    <string name="click_freeform_outside_action_tips">点击小窗意外的区域触发行为</string>
 </resources>
