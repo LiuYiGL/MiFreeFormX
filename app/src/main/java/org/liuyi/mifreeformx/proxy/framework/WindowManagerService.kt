@@ -1,6 +1,7 @@
 package org.liuyi.mifreeformx.proxy.framework
 
 import android.content.Context
+import android.os.Handler
 import org.liuyi.mifreeformx.xposed.base.annotation.ProxyField
 import org.liuyi.mifreeformx.xposed.base.annotation.ProxyMethod
 import org.liuyi.mifreeformx.xposed.base.interfaces.ProxyInterface
@@ -14,6 +15,12 @@ interface WindowManagerService : ProxyInterface {
 
     @get:ProxyField(name = "mMiuiFreeFormGestureController")
     val mMiuiFreeFormGestureController: Any?
+
+    @get:ProxyField(name = "mH")
+    val mH: Handler
+
+    @get:ProxyField(name = "mContext")
+    val mContext: Context?
 
     @ProxyMethod(name = "launchSmallFreeFormWindow")
     fun launchSmallFreeFormWindow(miuiFreeFormActivityStack: MiuiFreeFormActivityStack, boolean: Boolean)

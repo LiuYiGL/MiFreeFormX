@@ -31,6 +31,10 @@ interface MiuiFreeFormActivityStack : ProxyInterface {
     @set:ProxyField(name = "mTaskAnimationAdapter")
     var mTaskAnimationAdapter: Any?
 
+    @get:ProxyField(name = "mStackID")
+    @set:ProxyField(name = "mStackID")
+    var mStackID: Int
+
     @ProxyMethod(name = "inPinMode")
     fun inPinMode(): Boolean
 }

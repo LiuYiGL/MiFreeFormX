@@ -1,6 +1,12 @@
 package org.liuyi.mifreeformx.xposed.hooker
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.os.UserHandle
+import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.log.loggerD
+import com.highcapable.yukihookapi.hook.type.android.UserHandleClass
+import com.highcapable.yukihookapi.hook.type.java.IntType
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.proxy.framework.MiuiFreeFormActivityStack
 import org.liuyi.mifreeformx.proxy.framework.MiuiMultiWindowUtils
@@ -57,8 +63,8 @@ object FreeformLoseFocusHooker : LyBaseHooker() {
                             // 开始处理 mMiuiFreeFormActivityStackProxy
                             when (prefs.get(DataConst.FREEFORM_LOSE_FOCUS_OPT_TYPE)) {
                                 1 -> turnFreeFormToSmallWindow(stackProxy, mWmService)
-                                2 -> freeFormToPin(stackProxy, mWmService)
-                                3 -> exitApplication(stackProxy, mWmService)
+                                2 -> allFreeFromToPin(mWmService)
+                                3 -> exitAllFreeform(mWmService)
                             }
                         }
 
@@ -70,18 +76,20 @@ object FreeformLoseFocusHooker : LyBaseHooker() {
 
     /**
      * 小窗失去焦点后，迷你小窗
+     * 使用广播逻辑 具体 com.android.server.wm.MiuiFreeFormGestureController.FreeFormReceiver#onReceive
      */
+    @SuppressLint("MissingPermission")
     private fun turnFreeFormToSmallWindow(
         stack: MiuiFreeFormActivityStack,
         mWmService: WindowManagerService
     ) {
-        mWmService.mMiuiFreeFormGestureController
-            ?.getFieldValueOrNull("mGestureListener")
-            ?.let { mGestureListener->
-                mGestureListener.getFieldValueOrNull("mSmallFreeFormWindowMotionHelper")
-                    ?.callMethodByName("startShowFreeFormWindow", stack.instance)
-                mGestureListener.callMethodByName("turnFreeFormToSmallWindow", stack.instance)
-            }
+        mWmService.mH.post {
+            val userHandle = UserHandleClass.constructor { param(IntType) }.get().newInstance<UserHandle>(-1)
+            val intent = Intent("com.miui.fullscreen_state_change")
+                .putExtra("state", "toSmallFreeform")
+                .putExtra("rootStackID", stack.mStackID)
+            mWmService.mContext?.sendBroadcastAsUser(intent, userHandle)
+        }
     }
 
     /**
@@ -117,6 +125,20 @@ object FreeformLoseFocusHooker : LyBaseHooker() {
     }
 
     /**
+     *
+     *
+     * @param mWmService
+     */
+    @SuppressLint("MissingPermission")
+    private fun exitAllFreeform(mWmService: WindowManagerService) {
+        mWmService.mH.post {
+            val userHandle = UserHandleClass.constructor { param(IntType) }.get().newInstance<UserHandle>(-1)
+            val intent = Intent("miui.intent.action.PC_MODE_ENTER")
+            mWmService.mContext?.sendBroadcastAsUser(intent, userHandle)
+        }
+    }
+
+    /**
      * 失去焦点时小窗会贴边
      * @param stackProxy
      */
@@ -130,6 +152,20 @@ object FreeformLoseFocusHooker : LyBaseHooker() {
                             ?.callMethodByName("handleFreeFormToPin", stack.instance)
                     }
                 )
+        }
+    }
+
+    /**
+     * 失去焦点时全部小窗贴边
+     * 使用广播逻辑 具体 com.android.server.wm.MiuiFreeFormGestureController.FreeFormReceiver#onReceive
+     */
+    @SuppressLint("MissingPermission")
+    private fun allFreeFromToPin(mWmService: WindowManagerService) {
+        mWmService.mH.post {
+            val userHandle = UserHandleClass.constructor { param(IntType) }.get().newInstance<UserHandle>(-1)
+            val intent = Intent("com.miui.fullscreen_state_change")
+                .putExtra("state", "toHome")
+            mWmService.mContext?.sendBroadcastAsUser(intent, userHandle)
         }
     }
 }
