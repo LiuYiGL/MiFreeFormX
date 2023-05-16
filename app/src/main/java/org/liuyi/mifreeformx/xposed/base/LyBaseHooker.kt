@@ -3,7 +3,10 @@ package org.liuyi.mifreeformx.xposed.base
 import com.highcapable.yukihookapi.hook.core.finder.members.FieldFinder
 import com.highcapable.yukihookapi.hook.core.finder.members.MethodFinder
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
+import com.highcapable.yukihookapi.hook.log.loggerD
 import com.highcapable.yukihookapi.hook.log.loggerE
+import com.highcapable.yukihookapi.hook.log.loggerI
+import com.highcapable.yukihookapi.hook.log.loggerW
 import org.liuyi.mifreeformx.xposed.base.ReflectTools.findFieldByAnnotation
 import org.liuyi.mifreeformx.xposed.base.ReflectTools.findMethodByAnnotation
 import org.liuyi.mifreeformx.xposed.base.annotation.ProxyField
@@ -113,4 +116,11 @@ abstract class LyBaseHooker : YukiBaseHooker() {
             return null
         }
     }
+
+
+    protected fun logI(msg: String) = loggerI(msg = "[${javaClass.simpleName}] $msg")
+    protected fun logD(msg: String) = loggerD(msg = "[${javaClass.simpleName}] $msg")
+    protected fun logW(msg: String) = loggerW(msg = "[${javaClass.simpleName}] $msg")
+    protected fun logE(msg: String = "", e: Throwable? = null) = loggerE(msg = "[${javaClass.simpleName}] $msg", e = e)
+
 }
