@@ -14,44 +14,42 @@ import org.liuyi.mifreeformx.xposed.hooker.FreeformLoseFocusHooker.getProxyAs
  * @Date: 2023/05/07/12:50:40
  * @Description:
  */
-object MiuiMultiWindowUtils {
-
-    val proxy = "android.util.MiuiMultiWindowUtils".toClass().getProxyAs<MiuiMultiWindowUtils>()
-
-    interface MiuiMultiWindowUtils : ProxyInterface {
-
-        @get:ProxyField(name = "MULTI_WINDOW_SWITCH_ENABLED")
-        @set:ProxyField(name = "MULTI_WINDOW_SWITCH_ENABLED")
-        var MULTI_WINDOW_SWITCH_ENABLED: Boolean
-
-        @ProxyMethod(name = "hasSmallFreeform")
-        fun hasSmallFreeform(): Boolean
-
-        @ProxyMethod(name = "getPossibleBounds")
-        fun getPossibleBounds(
-            context: Context?,
-            vertical: Boolean,
-            isFreeformLandscape: Boolean,
-            packageName: String?
-        ): RectF?
-
-        @ProxyMethod(name = "getFreeformRect", paramCount = "1")
-        fun getFreeformRect(context: Context?): Rect?
-
-        @ProxyMethod(name = "getFreeformRect", paramCount = "3")
-        fun getFreeformRect(context: Context?, needDisplayContentRotation: Boolean, isVertical: Boolean): Rect?
-
-        @ProxyMethod(name = "getDisplaySize")
-        fun getDisplaySize(context: Context?): Rect?
-
-        @ProxyMethod(name= "getOriFreeformScale")
-        fun getOriFreeformScale(context: Context?, isFreeformLandscape: Boolean): Float
-
-        @ProxyMethod(name= "getScreenType")
-        fun getScreenType(context: Context?): Int
-
-
-        @ProxyMethod(name= "getFreeFormScale", paramCount = "3")
-        fun getFreeFormScale(vertical: Boolean, landscape: Boolean, screenType: Int): Float
+interface MiuiMultiWindowUtils : ProxyInterface {
+    companion object {
+        val StaticProxy = "android.util.MiuiMultiWindowUtils".toClass().getProxyAs<MiuiMultiWindowUtils>()
     }
+
+    @get:ProxyField(name = "MULTI_WINDOW_SWITCH_ENABLED")
+    @set:ProxyField(name = "MULTI_WINDOW_SWITCH_ENABLED")
+    var MULTI_WINDOW_SWITCH_ENABLED: Boolean
+
+    @ProxyMethod(name = "hasSmallFreeform")
+    fun hasSmallFreeform(): Boolean
+
+    @ProxyMethod(name = "getPossibleBounds")
+    fun getPossibleBounds(
+        context: Context?,
+        vertical: Boolean,
+        isFreeformLandscape: Boolean,
+        packageName: String?
+    ): RectF?
+
+    @ProxyMethod(name = "getFreeformRect", paramCount = "1")
+    fun getFreeformRect(context: Context?): Rect?
+
+    @ProxyMethod(name = "getFreeformRect", paramCount = "3")
+    fun getFreeformRect(context: Context?, needDisplayContentRotation: Boolean, isVertical: Boolean): Rect?
+
+    @ProxyMethod(name = "getDisplaySize")
+    fun getDisplaySize(context: Context?): Rect?
+
+    @ProxyMethod(name = "getOriFreeformScale")
+    fun getOriFreeformScale(context: Context?, isFreeformLandscape: Boolean): Float
+
+    @ProxyMethod(name = "getScreenType")
+    fun getScreenType(context: Context?): Int
+
+
+    @ProxyMethod(name = "getFreeFormScale", paramCount = "3")
+    fun getFreeFormScale(vertical: Boolean, landscape: Boolean, screenType: Int): Float
 }

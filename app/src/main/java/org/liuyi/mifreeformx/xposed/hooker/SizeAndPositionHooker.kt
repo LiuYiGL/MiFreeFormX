@@ -46,7 +46,7 @@ object SizeAndPositionHooker : LyBaseHooker() {
                     val options = (args[1] as ActivityOptions?) ?: return@beforeHook
                     val miuiFreeFormManagerService = instance.getProxyAs<MiuiFreeFormManagerService>()
                     val context = miuiFreeFormManagerService.mActivityTaskManagerService?.mContext!!
-                    val displaySize = MiuiMultiWindowUtils.proxy.getDisplaySize(context)!!
+                    val displaySize = MiuiMultiWindowUtils.StaticProxy.getDisplaySize(context)!!
                     val mode = prefs.get(OPEN_CUSTOM_SIZE_AND_POSITION_MODE)
                     if (
                         prefs.get(OPEN_CUSTOM_SIZE_AND_POSITION_MODE) != 0
@@ -67,10 +67,10 @@ object SizeAndPositionHooker : LyBaseHooker() {
                         )
 
                         // 准备信息
-                        val defaultScale = MiuiMultiWindowUtils.proxy.getFreeFormScale(
+                        val defaultScale = MiuiMultiWindowUtils.StaticProxy.getFreeFormScale(
                             isVertical,
                             false,
-                            MiuiMultiWindowUtils.proxy.getScreenType(context)
+                            MiuiMultiWindowUtils.StaticProxy.getScreenType(context)
                         )
 
                         val launchBounds = options.launchBounds!!

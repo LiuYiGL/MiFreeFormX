@@ -45,7 +45,7 @@ object FreeFormOutsideActionOpt {
         mWmService: WindowManagerService
     ) {
         // 挂起限制
-        if (MiuiMultiWindowUtils.proxy.hasSmallFreeform()) return
+        if (MiuiMultiWindowUtils.StaticProxy.hasSmallFreeform()) return
 
         /**
          * 设置挂起位置，1 - 左边，2 - 右边

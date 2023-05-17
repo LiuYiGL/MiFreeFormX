@@ -28,21 +28,21 @@ class SizeAndPositionPage : MyBasePage() {
         val longSide = ScreenUtils.getScreenWidth().coerceAtLeast(ScreenUtils.getScreenHeight())
     }
 
-    private val defaultVerticalRect by lazy { MiuiMultiWindowUtils.proxy.getFreeformRect(activity, false, true) }
+    private val defaultVerticalRect by lazy { MiuiMultiWindowUtils.StaticProxy.getFreeformRect(activity, false, true) }
     private val defaultVerticalScale by lazy {
-        MiuiMultiWindowUtils.proxy.getFreeFormScale(
+        MiuiMultiWindowUtils.StaticProxy.getFreeFormScale(
             true,
             false,
-            MiuiMultiWindowUtils.proxy.getScreenType(activity)
+            MiuiMultiWindowUtils.StaticProxy.getScreenType(activity)
         )
     }
 
-    private val defaultHorizontalRect by lazy { MiuiMultiWindowUtils.proxy.getFreeformRect(activity, false, false) }
+    private val defaultHorizontalRect by lazy { MiuiMultiWindowUtils.StaticProxy.getFreeformRect(activity, false, false) }
     private val defaultHorizontalScale by lazy {
-        MiuiMultiWindowUtils.proxy.getFreeFormScale(
+        MiuiMultiWindowUtils.StaticProxy.getFreeFormScale(
             false,
             false,
-            MiuiMultiWindowUtils.proxy.getScreenType(activity)
+            MiuiMultiWindowUtils.StaticProxy.getScreenType(activity)
         )
     }
 
