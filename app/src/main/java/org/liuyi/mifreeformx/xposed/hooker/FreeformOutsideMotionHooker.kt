@@ -58,7 +58,7 @@ object FreeformOutsideMotionHooker : LyBaseHooker() {
                                             it.getFieldValueOrNull("mStackID") as Int,
                                             mService
                                         )
-                                    }.exceptionOrNull().let { logE(e = it) }
+                                    }.exceptionOrNull()?.let { logE(e = it) }
                                 }
                             }
 
@@ -70,7 +70,7 @@ object FreeformOutsideMotionHooker : LyBaseHooker() {
                                         if (activityStack.isInFreeFormMode() && !activityStack.inPinMode()) {
                                             listener.startExitApplication(activityStack)
                                         }
-                                    }.exceptionOrNull().let { logE(e = it) }
+                                    }.exceptionOrNull()?.let { logE(e = it) }
                                 }
                             }
                         }
@@ -101,7 +101,7 @@ object FreeformOutsideMotionHooker : LyBaseHooker() {
                     if (result == null
                         && !listener.mInMultiTouch
                         && event != null
-                        && !MiuiMultiWindowUtils.proxy.MULTI_WINDOW_SWITCH_ENABLED
+//                        && !MiuiMultiWindowUtils.proxy.MULTI_WINDOW_SWITCH_ENABLED
                     ) {
                         val mfmService =
                             listener.mGestureController?.mMiuiFreeFormManagerService!!
