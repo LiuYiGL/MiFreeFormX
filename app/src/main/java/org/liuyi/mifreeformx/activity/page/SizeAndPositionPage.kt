@@ -13,6 +13,7 @@ import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.R
 import org.liuyi.mifreeformx.proxy.framework.MiuiMultiWindowUtils
 import org.liuyi.mifreeformx.utils.RectUtils
+import org.liuyi.mifreeformx.utils.logE
 import org.liuyi.mifreeformx.xposed.hooker.SizeAndPositionHooker
 
 /**
@@ -24,26 +25,34 @@ import org.liuyi.mifreeformx.xposed.hooker.SizeAndPositionHooker
 class SizeAndPositionPage : MyBasePage() {
 
     companion object {
-        val shortSide = ScreenUtils.getScreenHeight().coerceAtMost(ScreenUtils.getScreenWidth())
-        val longSide = ScreenUtils.getScreenWidth().coerceAtLeast(ScreenUtils.getScreenHeight())
+        val shortSide by lazy { ScreenUtils.getScreenHeight().coerceAtMost(ScreenUtils.getScreenWidth()) }
+        val longSide by lazy { ScreenUtils.getScreenWidth().coerceAtLeast(ScreenUtils.getScreenHeight()) }
     }
 
     private val defaultVerticalRect by lazy { MiuiMultiWindowUtils.StaticProxy.getFreeformRect(activity, false, true) }
     private val defaultVerticalScale by lazy {
-        MiuiMultiWindowUtils.StaticProxy.getFreeFormScale(
-            true,
-            false,
-            MiuiMultiWindowUtils.StaticProxy.getScreenType(activity)
-        )
+        kotlin.runCatching {
+            MiuiMultiWindowUtils.StaticProxy.run { getFreeFormScale(true, false, getScreenType(activity)) }
+        }.getOrElse {
+            activity.logE(e = it)
+            MiuiMultiWindowUtils.StaticProxy.run { getFreeFormScale(activity, true, false, getScreenType(activity)) }
+        }
     }
 
-    private val defaultHorizontalRect by lazy { MiuiMultiWindowUtils.StaticProxy.getFreeformRect(activity, false, false) }
-    private val defaultHorizontalScale by lazy {
-        MiuiMultiWindowUtils.StaticProxy.getFreeFormScale(
+    private val defaultHorizontalRect by lazy {
+        MiuiMultiWindowUtils.StaticProxy.getFreeformRect(
+            activity,
             false,
-            false,
-            MiuiMultiWindowUtils.StaticProxy.getScreenType(activity)
+            false
         )
+    }
+    private val defaultHorizontalScale by lazy {
+        kotlin.runCatching {
+            MiuiMultiWindowUtils.StaticProxy.run { getFreeFormScale(false, false, getScreenType(activity)) }
+        }.getOrElse {
+            activity.logE(e = it)
+            MiuiMultiWindowUtils.StaticProxy.run { getFreeFormScale(activity, false, false, getScreenType(activity)) }
+        }
     }
 
 
@@ -105,7 +114,8 @@ class SizeAndPositionPage : MyBasePage() {
         TitleText(text = "横屏", dataBindingRecv = modeViewBinding.getRecv(2))
         val scaleHorizontalRect =
             defaultHorizontalRect?.let { RectUtils.getScaledRect(it, defaultHorizontalScale) } ?: Rect()
-        TextSA("水平方向",
+        TextSA(
+            "水平方向",
             tips = "横屏的水平方向为较长端",
             onClickListener = {
                 showIntDialog(

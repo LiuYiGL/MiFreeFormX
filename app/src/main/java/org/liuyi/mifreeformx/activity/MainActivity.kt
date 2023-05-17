@@ -3,7 +3,9 @@ package org.liuyi.mifreeformx.activity
 import android.os.Bundle
 import cn.fkj233.ui.activity.MIUIActivity
 import cn.fkj233.ui.dialog.MIUIDialog
+import com.blankj.utilcode.util.ToastUtils
 import com.highcapable.yukihookapi.YukiHookAPI
+import com.highcapable.yukihookapi.hook.factory.prefs
 import org.liuyi.mifreeformx.R
 import org.liuyi.mifreeformx.activity.page.AboutPage
 import org.liuyi.mifreeformx.activity.page.AppSelectPage
@@ -45,6 +47,9 @@ class MainActivity : MIUIActivity() {
                     cancel()
                 }
             }.show()
+        }
+        if (!prefs().isPreferencesAvailable) {
+            ToastUtils.showShort("模块配置获取失败，请检查环境并尝试重启模块或系统")
         }
         setSP(getPreferences(MODE_PRIVATE))
         super.onCreate(savedInstanceState)

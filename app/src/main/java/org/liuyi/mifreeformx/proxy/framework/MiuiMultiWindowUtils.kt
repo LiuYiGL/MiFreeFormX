@@ -52,4 +52,8 @@ interface MiuiMultiWindowUtils : ProxyInterface {
 
     @ProxyMethod(name = "getFreeFormScale", paramCount = "3")
     fun getFreeFormScale(vertical: Boolean, landscape: Boolean, screenType: Int): Float
+
+    // 小米13U 使用该方法
+    @ProxyMethod(name = "getFreeFormScale", paramCount = "4")
+    fun getFreeFormScale(context: Context?, vertical: Boolean, landscape: Boolean, screenType: Int): Float
 }

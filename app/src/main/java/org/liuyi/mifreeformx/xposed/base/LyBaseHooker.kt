@@ -91,7 +91,9 @@ abstract class LyBaseHooker : YukiBaseHooker() {
                     val uniqueCode = "[$clazz][$annotation]"
                     if (uniqueCode !in methodMap) {
                         // 初始化
-                        methodMap[uniqueCode] = clazz.findFieldByAnnotation(annotation)
+                        val result = clazz.findFieldByAnnotation(annotation)
+                        methodMap[uniqueCode] = result
+                        logD("[$uniqueCode] has find fields: ${result.giveAll()}")
                     }
 
                     return (methodMap[uniqueCode] as FieldFinder.Result).get(instance).run {
@@ -103,7 +105,9 @@ abstract class LyBaseHooker : YukiBaseHooker() {
                     val annotation = method.getAnnotation(ProxyMethod::class.java)!!
                     val uniqueCode = "[$clazz][$annotation]"
                     if (uniqueCode !in methodMap) {
-                        methodMap[uniqueCode] = clazz.findMethodByAnnotation(annotation)
+                        val result = clazz.findMethodByAnnotation(annotation)
+                        methodMap[uniqueCode] = result
+                        logD("[$uniqueCode] has find methods: ${result.giveAll()}")
                     }
                     return (methodMap[uniqueCode] as MethodFinder.Result).get(instance)
                         .call(*param2OriIfNeed(*args.orEmpty()))   // 参数转换

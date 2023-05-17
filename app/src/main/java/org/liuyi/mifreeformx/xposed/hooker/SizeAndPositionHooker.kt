@@ -67,11 +67,14 @@ object SizeAndPositionHooker : LyBaseHooker() {
                         )
 
                         // 准备信息
-                        val defaultScale = MiuiMultiWindowUtils.StaticProxy.getFreeFormScale(
-                            isVertical,
-                            false,
-                            MiuiMultiWindowUtils.StaticProxy.getScreenType(context)
-                        )
+                        val defaultScale = MiuiMultiWindowUtils.StaticProxy.run {
+                            val screenType = MiuiMultiWindowUtils.StaticProxy.getScreenType(context)
+                            runCatching {
+                                getFreeFormScale(isVertical, false, screenType)
+                            }.getOrElse {
+                                getFreeFormScale(context, isVertical, false, screenType)
+                            }
+                        }
 
                         val launchBounds = options.launchBounds!!
                         val optionsInjector = options.callMethodByName("getActivityOptionsInjector")
