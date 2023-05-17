@@ -20,6 +20,9 @@ interface MiuiFreeFormGestureController: ProxyInterface {
     @get:ProxyField(name = "mMiuiFreeFormManagerService")
     var mMiuiFreeFormManagerService: MiuiFreeFormManagerService?
 
+    @get:ProxyField(name = "mDisplayContent")
+    val mDisplayContent: Any?
+
     @ProxyMethod(name = "notifyFreeFormApplicationResizeEnd")
     fun notifyFreeFormApplicationResizeEnd(resizeTime: Long, mffas: MiuiFreeFormActivityStack?)
 
