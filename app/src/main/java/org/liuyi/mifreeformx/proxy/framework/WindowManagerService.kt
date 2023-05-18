@@ -22,6 +22,9 @@ interface WindowManagerService : ProxyInterface {
     @get:ProxyField(name = "mContext")
     val mContext: Context?
 
+    @get:ProxyField(name = "mRoot")
+    var mRoot: RootWindowContainer?
+
     @ProxyMethod(name = "launchSmallFreeFormWindow")
     fun launchSmallFreeFormWindow(miuiFreeFormActivityStack: MiuiFreeFormActivityStack, boolean: Boolean)
 }

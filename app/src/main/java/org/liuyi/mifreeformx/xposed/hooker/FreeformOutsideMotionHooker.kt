@@ -84,7 +84,7 @@ object FreeformOutsideMotionHooker : LyBaseHooker() {
                 method { name = "synchronizeControlInfoForeMoveEvent" }
                 afterHook {
                     if (prefs.get(CLICK_FREEFORM_OUTSIDE_ACTION_TYPE) == 0
-                        && prefs.get(FREEFORM_OUTSIDE_MOTION_MODE) == 0
+                        || prefs.get(FREEFORM_OUTSIDE_MOTION_MODE) == 0
                     ) return@afterHook
                     logD(msg = "synchronizeControlInfoForeMoveEvent: 参数：${args.toList()}, 返回值：$result")
                     val listener = instance.getProxyAs<MiuiFreeFormGesturePointerEventListener>()
@@ -95,6 +95,26 @@ object FreeformOutsideMotionHooker : LyBaseHooker() {
                         val imwVisibleHeight = getInputMethodVisibleHeight(mGestureController)
                         logD("当前软键盘高度：$imwVisibleHeight")
                         if (imwVisibleHeight != 0) return@afterHook
+
+                        val displayContent = mGestureController.mDisplayContent!!
+
+                        // 获取状态栏高度
+                        val statusBarHeight = displayContent.mInitialDisplayCutout?.safeInsetTop ?: 0
+                        logD("当前状态栏高度：$statusBarHeight")
+                        if (event.y <= statusBarHeight) {
+                            return@afterHook
+                        }
+                        displayContent.mDisplayMetrics?.run {
+                            val gestureWidth = widthPixels * 0.05
+                            if (event.x < gestureWidth || event.x > widthPixels - gestureWidth) {
+                                logD("判断为返回手势，取消执行：[widthPixels: $widthPixels]")
+                                return@afterHook
+                            }
+                            if (event.y > statusBarHeight + heightPixels * 0.98) {
+                                logD("判断为主页手势，取消执行：[widthPixels: $heightPixels]")
+                                return@afterHook
+                            }
+                        }
 
                         val mfmService = mGestureController.mMiuiFreeFormManagerService!!
                         val stackList = mfmService.getAllMiuiFreeFormActivityStack().filterNotNull()
@@ -144,7 +164,7 @@ object FreeformOutsideMotionHooker : LyBaseHooker() {
     private fun findFreeFormActivityStackByPosition(stackList: List<Any>, x: Float, y: Float) =
         stackList.map {
             it.getProxyAs<MiuiFreeFormActivityStack>()
-        }.firstOrNull {
+        }.filter { !it.inPinMode() && it.isInFreeFormMode() }.firstOrNull {
             val rect = it.mTask?.getConfiguration()
                 ?.getFieldValueOrNull("windowConfiguration")
                 ?.getFieldValueOrNull("mBounds") as? Rect?
@@ -156,7 +176,7 @@ object FreeformOutsideMotionHooker : LyBaseHooker() {
         }
 
     private fun getInputMethodVisibleHeight(listener: MiuiFreeFormGestureController): Int {
-        val displayId = listener.mDisplayContent?.callMethodByName("getDisplayId") as Int
+        val displayId = listener.mDisplayContent?.getDisplayId()
         val wmInternal = LocalServices.StaticProxy.getService("com.android.server.wm.WindowManagerInternal".toClass())!!
         return wmInternal.callMethodByName("getInputMethodWindowVisibleHeight", displayId) as Int
     }
@@ -164,10 +184,10 @@ object FreeformOutsideMotionHooker : LyBaseHooker() {
     private fun handleToMiniWindow(stackList: List<Any>, wmService: WindowManagerService) {
         stackList.forEach {
             kotlin.runCatching {
-                FreeFormOutsideActionOpt.turnFreeFormToSmallWindow(
-                    it.getFieldValueOrNull("mStackID") as Int,
-                    wmService
-                )
+                val stack = it.getProxyAs<MiuiFreeFormActivityStack>()
+                if (stack.isInFreeFormMode() && !stack.inPinMode()) {
+                    FreeFormOutsideActionOpt.turnFreeFormToSmallWindow(stack.mStackID, wmService)
+                }
             }.exceptionOrNull()?.let { logE(e = it) }
         }
     }

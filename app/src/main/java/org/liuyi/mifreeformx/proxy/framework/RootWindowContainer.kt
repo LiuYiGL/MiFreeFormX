@@ -1,5 +1,6 @@
 package org.liuyi.mifreeformx.proxy.framework
 
+import org.liuyi.mifreeformx.xposed.base.annotation.ProxyField
 import org.liuyi.mifreeformx.xposed.base.annotation.ProxyMethod
 import org.liuyi.mifreeformx.xposed.base.interfaces.ProxyInterface
 
@@ -9,6 +10,9 @@ import org.liuyi.mifreeformx.xposed.base.interfaces.ProxyInterface
  * @Description:
  */
 interface RootWindowContainer: ProxyInterface {
+
+    @get:ProxyField(name = "mDefaultDisplay")
+    val mDefaultDisplay: DisplayContent?
 
     @ProxyMethod(name = "getRootTask", paramCount = "1")
     fun getRootTask(rooTaskId: Int): Task?
