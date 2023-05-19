@@ -1,14 +1,17 @@
 package org.liuyi.mifreeformx.xposed.hooker
 
+import android.content.Context
 import android.graphics.Rect
 import android.view.MotionEvent
 import com.highcapable.yukihookapi.hook.factory.constructor
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
+import org.liuyi.mifreeformx.proxy.framework.IFingerprintService
 import org.liuyi.mifreeformx.proxy.framework.LocalServices
 import org.liuyi.mifreeformx.proxy.framework.MiuiFreeFormActivityStack
 import org.liuyi.mifreeformx.proxy.framework.MiuiFreeFormGestureController
 import org.liuyi.mifreeformx.proxy.framework.MiuiFreeFormGesturePointerEventListener
 import org.liuyi.mifreeformx.proxy.framework.MiuiFreeFormManagerService
+import org.liuyi.mifreeformx.proxy.framework.ServiceManager
 import org.liuyi.mifreeformx.proxy.framework.WindowManagerService
 import org.liuyi.mifreeformx.utils.RectUtils
 import org.liuyi.mifreeformx.utils.callMethodByName
@@ -114,6 +117,15 @@ object FreeformOutsideMotionHooker : LyBaseHooker() {
                                 logD("判断为主页手势，取消执行：[widthPixels: $heightPixels]")
                                 return@afterHook
                             }
+                        }
+
+                        val fingerprintService = ServiceManager.StaticProxy.getService(Context.FINGERPRINT_SERVICE)
+                            .let {
+                                IFingerprintService.Stub.StaticProxy.asInterface(it)
+                            }
+                        if (fingerprintService?.isClientActive() == true) {
+                            logD("正在使用指纹，取消触发")
+                            return@afterHook
                         }
 
                         val mfmService = mGestureController.mMiuiFreeFormManagerService!!
