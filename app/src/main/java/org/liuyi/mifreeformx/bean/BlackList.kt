@@ -1,7 +1,5 @@
 package org.liuyi.mifreeformx.bean
 
-import android.app.Activity
-import com.highcapable.yukihookapi.hook.param.PackageParam
 import com.highcapable.yukihookapi.hook.xposed.prefs.YukiHookPrefsBridge
 
 /**
@@ -19,9 +17,9 @@ interface BlackList {
 
     fun contains(prefs: YukiHookPrefsBridge? = null, item: String): Boolean
 
-    fun size(prefs: YukiHookPrefsBridge? = null, item: String): Int
+    fun size(prefs: YukiHookPrefsBridge? = null): Int
 
-    fun clear(prefs: YukiHookPrefsBridge? = null, item: String)
+    fun clear(prefs: YukiHookPrefsBridge? = null)
 
     fun getAll(prefs: YukiHookPrefsBridge? = null): Set<String>
 }

@@ -29,11 +29,11 @@ class JumpAndShareBetweenApplicationsPage : MyBasePage() {
             createSwitchV(DataConst.APP_JUMP)
         )
         TextSummaryWithArrow(TextSummaryV(text = "源黑名单", tips = "不使用小窗处理打开其他应用") {
-            AppSelectPage.currentBlackList = BlackList.AppJumpSourceBlacklist
+            AppSelectPage.preList = BlackList.AppJumpSourceBlacklist
             showFragment("AppSelectPage")
         })
         TextSummaryWithArrow(TextSummaryV(text = "目标黑名单", tips = "对将打开的应用不处理") {
-            AppSelectPage.currentBlackList = BlackList.AppJumpTargetBlacklist
+            AppSelectPage.preList = BlackList.AppJumpTargetBlacklist
             showFragment("AppSelectPage")
         })
 
@@ -54,11 +54,11 @@ class JumpAndShareBetweenApplicationsPage : MyBasePage() {
             createSwitchV(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)
         )
         TextSummaryWithArrow(TextSummaryV(text = "源黑名单", tips = "不处理当前应用的分享") {
-            AppSelectPage.currentBlackList = BlackList.AppShareSourceBlacklist
+            AppSelectPage.preList = BlackList.AppShareSourceBlacklist
             showFragment("AppSelectPage")
         })
         TextSummaryWithArrow(TextSummaryV(text = "目标黑名单", tips = "不处理分享的目标应用") {
-            AppSelectPage.currentBlackList = BlackList.AppShareTargetBlacklist
+            AppSelectPage.preList = BlackList.AppShareTargetBlacklist
             showFragment("AppSelectPage")
         })
     }

@@ -32,15 +32,15 @@ class AppSelectPage : MyBasePage() {
         }
 
         val allAppInfo: MutableList<AppUtils.AppInfo> by lazy { AppUtils.getAppsInfo() }
-        var currentBlackList: BlackListBean? = null
+        var preList: BlackListBean? = null
     }
 
-    private var lastBlackList: BlackListBean? = null
+    private var currentList: BlackListBean? = null
 
 
     private val mAppSelectAdapter by lazy {
         AppSelectAdapter(activity, allAppInfo.toMutableList(), mutableSetOf(), setOf()) { _, _ ->
-            lastBlackList?.addAll(activity.prefs(), selectedSet)
+            currentList?.addAll(activity.prefs(), selectedSet)
         }
     }
 
@@ -78,6 +78,12 @@ class AppSelectPage : MyBasePage() {
             mAppSelectAdapter.mAppInfoList.sort(mAppSelectAdapter.selectedSet)
             mAppSelectAdapter.notifyDataSetChanged()
         }
+
+        TextA("恢复默认设置", onClickListener = {
+            currentList?.clear(activity.prefs())
+            mAppSelectAdapter.refreshList()
+        })
+
         List {
             adapter = mAppSelectAdapter
         }
@@ -86,24 +92,9 @@ class AppSelectPage : MyBasePage() {
     override fun asyncInit(fragment: MIUIFragment) {
         fragment.showLoading()
         // 初始化
-        mAppSelectAdapter.apply {
-            val current = currentBlackList?.getAll(activity.prefs())
-
-            mAppInfoList = current?.let {
-                allAppInfo.toMutableList().sort(current)
-            } ?: mutableListOf()
-
-            disEnabledSet = currentBlackList?.forceList ?: setOf()
-            selectedSet = current?.toMutableSet() ?: mutableSetOf()
-
-            loggerD(msg = "当前黑名单: $currentBlackList")
-            loggerD(msg = "上次黑名单: $lastBlackList")
-            loggerD(msg = "不可选项: $disEnabledSet")
-            loggerD(msg = "当前选择项: $selectedSet")
-            notifyDataSetChanged()
-        }
-        lastBlackList = currentBlackList
-        currentBlackList = null
+        currentList = preList
+        mAppSelectAdapter.refreshList()
+        preList = null
         fragment.initData()
         fragment.closeLoading()
     }
@@ -126,5 +117,19 @@ class AppSelectPage : MyBasePage() {
             it.name.contains(str, true)
                     || it.packageName.contains(str, true)
         }.toMutableList()
+    }
+
+    fun AppSelectAdapter.refreshList(list: BlackListBean? = currentList) {
+        val current = list?.getAll(activity.prefs())
+
+        mAppInfoList = current?.let {
+            allAppInfo.toMutableList().sort(current)
+        } ?: mutableListOf()
+
+        selectedSet = current?.toMutableSet() ?: mutableSetOf()
+
+        loggerD(msg = "当前黑名单: $currentList")
+        loggerD(msg = "当前选择项: $selectedSet")
+        notifyDataSetChanged()
     }
 }

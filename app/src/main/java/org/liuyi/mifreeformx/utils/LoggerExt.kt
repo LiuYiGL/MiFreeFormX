@@ -30,3 +30,5 @@ fun HookParam.logD(msg: String) = loggerD(msg = "[${javaClass.simpleName}] [${me
 fun HookParam.logW(msg: String) = loggerW(msg = "[${javaClass.simpleName}] [${member.name}] $msg")
 fun HookParam.logE(msg: String = "", e: Throwable? = null) = loggerE(msg = "[${javaClass.simpleName}] [${member.name}] $msg", e = e)
 
+fun HookParam.logStack() = this.runCatching { throw Exception() }.onFailure { logE("logStack", it) }
+

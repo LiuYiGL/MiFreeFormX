@@ -13,13 +13,8 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
  */
 open class BlackListBean(private val prefsData: PrefsData<Set<String>>? = null) : BlackList {
 
-    var forceList: Set<String> = prefsData?.value?: setOf()
 
     override fun add(prefs: YukiHookPrefsBridge?, item: String) {
-        if (item in forceList) {
-            loggerD(msg = "$item is forced to open")
-            return
-        }
         if (prefs != null && prefsData != null) {
             val mutableSet = prefs.get(prefsData).toMutableSet()
             mutableSet.add(item)
@@ -35,10 +30,6 @@ open class BlackListBean(private val prefsData: PrefsData<Set<String>>? = null) 
     }
 
     override fun remove(prefs: YukiHookPrefsBridge?, item: String) {
-        if (item in forceList) {
-            loggerD(msg = "$item is forced to open")
-            return
-        }
         if (prefs != null && prefsData != null) {
             val mutableSet = prefs.get(prefsData).toMutableSet()
             mutableSet.remove(item)
@@ -47,25 +38,25 @@ open class BlackListBean(private val prefsData: PrefsData<Set<String>>? = null) 
     }
 
     override fun contains(prefs: YukiHookPrefsBridge?, item: String): Boolean {
-        return item in forceList || prefsData?.let { prefs?.get(it)?.contains(item) } ?: false
+        return prefsData?.let { prefs?.get(it)?.contains(item) } ?: false
     }
 
-    override fun size(prefs: YukiHookPrefsBridge?, item: String): Int {
+    override fun size(prefs: YukiHookPrefsBridge?): Int {
         return if (prefs != null && prefsData != null) {
-            forceList.toMutableSet().apply { addAll(prefs.get(prefsData)) }.size
-        } else forceList.size
+            prefs.get(prefsData).size
+        } else 0
     }
 
-    override fun clear(prefs: YukiHookPrefsBridge?, item: String) {
+    override fun clear(prefs: YukiHookPrefsBridge?) {
         if (prefs != null && prefsData != null) {
-            prefs.edit { put(prefsData, setOf()) }
+            prefs.edit { remove(prefsData) }
         }
     }
 
     override fun getAll(prefs: YukiHookPrefsBridge?): Set<String> {
         return if (prefs != null && prefsData != null) {
-            forceList.toMutableSet().apply { addAll(prefs.get(prefsData)) }
-        } else forceList
+            prefs.get(prefsData)
+        } else setOf()
     }
 
     fun contains(prefs: YukiHookPrefsBridge? = null, intent: Intent, context: Context? = null): Boolean {

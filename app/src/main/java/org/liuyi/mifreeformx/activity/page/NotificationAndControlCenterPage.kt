@@ -49,7 +49,7 @@ class NotificationAndControlCenterPage : MyBasePage() {
             createSwitchV(DataConst.FORCE_CONTROL_ALL_OPEN)
         )
         TextSummaryWithArrow(TextSummaryV(text = "黑名单") {
-            AppSelectPage.currentBlackList = BlackList.TileBlacklist
+            AppSelectPage.preList = BlackList.TileBlacklist
             showFragment("AppSelectPage")
         })
 
