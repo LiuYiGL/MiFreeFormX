@@ -15,7 +15,6 @@ object AppJumpOpt {
     fun isAppJump(callingThread: Any?, callingPackage: String?, intent: Intent, context: Context): Boolean {
         // 排除如，系统后台进入，获取桌面进入
         if (intent.flags and Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED != 0) return false
-        if (callingPackage == "com.miui.securityadd") return false
         if (intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK != 0) {
             // 包含 new 标签
             val componentName = intent.component ?: intent.resolveActivity(context.packageManager)

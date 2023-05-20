@@ -13,12 +13,32 @@ import org.liuyi.mifreeformx.bean.BlackListBean
 object BlackList {
 
     object AppJumpSourceBlacklist :
-        BlackListBean(PrefsData("app_jump_source_blacklist", setOf("com.android.providers.media.module")))
+        BlackListBean(
+            PrefsData(
+                "app_jump_source_blacklist",
+                setOf(
+                    "com.android.providers.media.module",
+                    "android",
+                    "com.android.shell",
+                    "com.android.providers.media.module",
+                    "com.miui.securitycenter",
+                    "com.miui.securityadd",
+                    "com.android.systemui"
+                )
+            )
+        )
 
     object AppJumpTargetBlacklist : BlackListBean(
         PrefsData(
             "app_jump_target_blacklist",
-            setOf("com.android.camera", "com.miui.tsmclient", "com.lbe.security.miui")
+            setOf(
+                "com.android.camera",
+                "com.miui.tsmclient",
+                "com.lbe.security.miui",
+                "com.miui.securitycenter",
+                "com.miui.personalassistant",
+                "com.android.phone"
+            )
         )
     )
 
