@@ -85,4 +85,6 @@ object DataConst {
      */
     val FREEFORM_LOSE_FOCUS_OPT_TYPE = PrefsData("freeform_lose_focus_opt_type", 0)
     val freeformLoseFocusOptTypeString = listOf("默认", "小窗挂起", "小窗贴边", "小窗关闭")
+
+    val DETAILED_LOG = PrefsData("detailed_log", false)
 }

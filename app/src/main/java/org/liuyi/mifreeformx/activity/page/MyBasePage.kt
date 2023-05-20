@@ -18,9 +18,12 @@ import org.liuyi.mifreeformx.R
  */
 abstract class MyBasePage : BasePage() {
 
-    internal fun createSwitchV(prefsData: PrefsData<Boolean>) =
+    internal fun createSwitchV(prefsData: PrefsData<Boolean>, block: ((Boolean) -> Unit)? = null) =
         SwitchV(prefsData.key, activity.prefs().get(prefsData)) {
             activity.prefs().edit { put(prefsData, it) }
+            if (block != null) {
+                block(it)
+            }
         }
 
     internal fun createSpinnerV(

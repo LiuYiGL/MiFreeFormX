@@ -20,7 +20,6 @@ object HookEntry : IYukiHookXposedInit {
 
     override fun onInit() {
         configs {
-            isDebug = true
             debugLog {
                 tag = "MzFreeForm"
             }
@@ -34,6 +33,12 @@ object HookEntry : IYukiHookXposedInit {
         } else if (!prefs.get(DataConst.MAIN_SWITCH)) {
             loggerW(msg = "模块已关闭")
         } else {
+            YukiHookAPI.Configs.isDebug = prefs.get(DataConst.DETAILED_LOG)
+            loadApp {
+                dataChannel.wait<Boolean>(DataConst.DETAILED_LOG.key) {
+                    YukiHookAPI.Configs.isDebug = it
+                }
+            }
             loggerI(msg = "Starting Hook！！")
             loadSystem(FrameworkEnhanceHooker)
             loadSystem(FrameworkBaseHooker)
