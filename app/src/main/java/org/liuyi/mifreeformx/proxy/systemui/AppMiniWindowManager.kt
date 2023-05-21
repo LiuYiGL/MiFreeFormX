@@ -12,4 +12,7 @@ import org.liuyi.mifreeformx.xposed.base.interfaces.ProxyInterface
 interface AppMiniWindowManager : ProxyInterface {
     @ProxyMethod(name = "launchMiniWindowActivity")
     fun launchMiniWindowActivity(str: String?, pendingIntent: PendingIntent?)
+
+    @ProxyMethod(name = "canNotificationSlide")
+    fun canNotificationSlide(str: String?, pendingIntent: PendingIntent?): Boolean
 }

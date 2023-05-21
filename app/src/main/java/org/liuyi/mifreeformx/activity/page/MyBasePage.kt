@@ -18,8 +18,17 @@ import org.liuyi.mifreeformx.R
  */
 abstract class MyBasePage : BasePage() {
 
-    internal fun createSwitchV(prefsData: PrefsData<Boolean>, block: ((Boolean) -> Unit)? = null) =
-        SwitchV(prefsData.key, activity.prefs().get(prefsData)) {
+    internal fun createSwitchV(
+        prefsData: PrefsData<Boolean>,
+        dataBindingSend: DataBinding.Binding.Send? = null,
+        dataBindingRecv: DataBinding.Binding.Recv? = null,
+        block: ((Boolean) -> Unit)? = null
+    ) =
+        SwitchV(
+            prefsData.key, activity.prefs().get(prefsData),
+            dataBindingSend = dataBindingSend,
+            dataBindingRecv = dataBindingRecv
+        ) {
             activity.prefs().edit { put(prefsData, it) }
             if (block != null) {
                 block(it)
