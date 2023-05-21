@@ -39,6 +39,9 @@ class MiscellaneousPage : MyBasePage() {
             TextV(textId = R.string.lift_window_num_limit),
             createSwitchV(DataConst.LIFT_WINDOW_NUM_LIMIT)
         )
+        TextSA("忽略部分弹窗", tips = "禁止某些弹窗使用小窗", onClickListener = {
+            showFragment("IgnorePopViewPage")
+        })
         Line()
         TitleText("小窗以外区域手势")
         TextSummaryWithSpinner(

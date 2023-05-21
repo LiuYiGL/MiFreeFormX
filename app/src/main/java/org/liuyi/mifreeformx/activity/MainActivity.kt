@@ -10,6 +10,7 @@ import org.liuyi.mifreeformx.R
 import org.liuyi.mifreeformx.activity.page.AboutPage
 import org.liuyi.mifreeformx.activity.page.AppSelectPage
 import org.liuyi.mifreeformx.activity.page.DonatePage
+import org.liuyi.mifreeformx.activity.page.IgnorePopViewPage
 import org.liuyi.mifreeformx.activity.page.JumpAndShareBetweenApplicationsPage
 import org.liuyi.mifreeformx.activity.page.MainPage
 import org.liuyi.mifreeformx.activity.page.MenuPage
@@ -36,6 +37,7 @@ class MainActivity : MIUIActivity() {
         registerPage(AppSelectPage::class.java)
         registerPage(DonatePage::class.java)
         registerPage(SizeAndPositionPage::class.java)
+        registerPage(IgnorePopViewPage::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

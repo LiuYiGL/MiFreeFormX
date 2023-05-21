@@ -46,6 +46,7 @@ object HookEntry : IYukiHookXposedInit {
             loadApp("com.tencent.mm", WeChatHooker)
             loadSystem(SizeAndPositionHooker)
             loadSystem(FreeformOutsideMotionHooker)
+            loadSystem(IgnorePopViewHooker)
         }
     }
 
