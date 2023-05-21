@@ -6,6 +6,7 @@ import cn.fkj233.ui.activity.view.TextSummaryV
 import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.R
+import org.liuyi.mifreeformx.xposed.hooker.FrameworkBaseHooker
 
 /**
  * @Author: Liuyi
@@ -61,5 +62,12 @@ class JumpAndShareBetweenApplicationsPage : MyBasePage() {
             AppSelectPage.preList = BlackList.AppShareTargetBlacklist
             showFragment("AppSelectPage")
         })
+
+        Line()
+        TitleText(textId = R.string.other)
+        TextSummaryWithSwitch(
+            TextSummaryV("使用小窗安装应用"),
+            createSwitchV(FrameworkBaseHooker.INSTALL_APP_BY_FREEFORM)
+        )
     }
 }

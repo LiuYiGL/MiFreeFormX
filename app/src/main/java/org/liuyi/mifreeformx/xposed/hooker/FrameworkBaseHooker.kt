@@ -3,6 +3,7 @@ package org.liuyi.mifreeformx.xposed.hooker
 import android.annotation.SuppressLint
 import android.content.Intent
 import com.highcapable.yukihookapi.hook.log.loggerD
+import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.intent.LyIntent
@@ -23,6 +24,9 @@ import org.liuyi.mifreeformx.xposed.operation.ParallelSmallWindowOpt
 @SuppressLint("QueryPermissionsNeeded")
 
 object FrameworkBaseHooker : LyBaseHooker() {
+
+    private const val APK_MIME = "application/vnd.android.package-archive"
+    val INSTALL_APP_BY_FREEFORM = PrefsData("install_app_by_freeform", false)
 
 
     @SuppressLint("WrongConstant")
@@ -49,6 +53,13 @@ object FrameworkBaseHooker : LyBaseHooker() {
                     args[3] = intent
                     val context = atmService.mContext ?: return@beforeHook
                     val callee = intent.resolveActivity(context.packageManager)?.packageName ?: return@beforeHook
+                    if (intent.type == APK_MIME) {
+                        if (prefs.get(INSTALL_APP_BY_FREEFORM)) {
+                            logD("判断为安装应用")
+                            intent.addFlags(LyIntent.FLAG_ACTIVITY_OPEN_FREEFORM or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
+                        return@beforeHook
+                    }
 
                     if (prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)
                         && ParallelSmallWindowOpt.isFromSidebar(caller, intent)
