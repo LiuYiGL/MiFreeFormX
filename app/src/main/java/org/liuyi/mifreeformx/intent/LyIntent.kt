@@ -8,6 +8,6 @@ import android.content.Intent
  * @Description:
  */
 object LyIntent : Intent() {
-    const val FLAG_ACTIVITY_OPEN_DEFAULT = 0x00000001
-    const val FLAG_ACTIVITY_OPEN_FREEFORM = 0x00000002
+    const val FLAG_ACTIVITY_OPEN_DEFAULT = 0x00000060
+    const val FLAG_ACTIVITY_OPEN_FREEFORM = 0x00000061
 }
