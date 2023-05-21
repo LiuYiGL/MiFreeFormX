@@ -2,14 +2,10 @@ package org.liuyi.mifreeformx.xposed.hooker
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Bundle
 import com.highcapable.yukihookapi.hook.log.loggerD
 import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
-import org.liuyi.mifreeformx.intent_extra.FreeFormIntent
-import org.liuyi.mifreeformx.intent_extra.forceFreeFromMode
-import org.liuyi.mifreeformx.intent_extra.getFreeFormMode
-import org.liuyi.mifreeformx.intent_extra.setFreeFromBundle
+import org.liuyi.mifreeformx.intent.LyIntent
 import org.liuyi.mifreeformx.proxy.framework.ActivityTaskManagerService
 import org.liuyi.mifreeformx.proxy.framework.RootWindowContainer
 import org.liuyi.mifreeformx.proxy.framework.SafeActivityOptions
@@ -29,6 +25,7 @@ import org.liuyi.mifreeformx.xposed.operation.ParallelSmallWindowOpt
 object FrameworkBaseHooker : LyBaseHooker() {
 
 
+    @SuppressLint("WrongConstant")
     override fun onHook() {
 
         var rootWindowContainer: RootWindowContainer? = null
@@ -66,7 +63,8 @@ object FrameworkBaseHooker : LyBaseHooker() {
                         && !BlackList.AppJumpSourceBlacklist.contains(prefs, caller)
                         && !BlackList.AppJumpTargetBlacklist.contains(prefs, callee)
                     ) {
-                        intent.forceFreeFromMode()
+                        logD("判断为应用间跳转")
+                        intent.addFlags(LyIntent.FLAG_ACTIVITY_OPEN_FREEFORM)
                     }
 
                     if (prefs.get(DataConst.SHARE_TO_APP)
@@ -75,11 +73,8 @@ object FrameworkBaseHooker : LyBaseHooker() {
                         && !BlackList.AppShareSourceBlacklist.contains(prefs, caller)
                         && !BlackList.AppShareTargetBlacklist.contains(prefs, callee)
                     ) {
+                        logD("判断为应用间分享")
                         AppShareOpt.handle(intent)
-                    }
-                    if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
-                        args[10] = args[10] ?: getBasicBundle()
-                        intent.setFreeFromBundle(args[10] as Bundle, context)
                     }
                 }
             }
@@ -99,11 +94,8 @@ object FrameworkBaseHooker : LyBaseHooker() {
                         && AppShareOpt.isShareToApp(caller, intent)
                         && !BlackList.AppShareTargetBlacklist.contains(prefs, intent, context)
                     ) {
+                        logD("判断为系统的应用间分享")
                         AppShareOpt.handle(intent)
-                    }
-                    if (intent.getFreeFormMode() == FreeFormIntent.FREE_FORM_EXTRA_FORCE) {
-                        args[9] = args[9] ?: getBasicBundle()
-                        intent.setFreeFromBundle(args[9] as Bundle, context)
                     }
                 }
             }
@@ -132,10 +124,8 @@ object FrameworkBaseHooker : LyBaseHooker() {
                     if (AppShareOpt.isShareToApp(caller, intent) && prefs.get(DataConst.SHARE_TO_APP)
                         && !BlackList.AppShareTargetBlacklist.contains(prefs, intent, context)
                     ) {
-                        safeActivityOptions.mOriginalOptions?.apply {
-                            setLaunchWindowingModeExt(5)
-                            launchBounds = MiuiMultiWindowUtils.getFreeformRect(context)
-                        }
+                        logD("判断为应用间分享")
+                        intent.addFlags(LyIntent.FLAG_ACTIVITY_OPEN_FREEFORM)
                     }
                     if (
                         prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)

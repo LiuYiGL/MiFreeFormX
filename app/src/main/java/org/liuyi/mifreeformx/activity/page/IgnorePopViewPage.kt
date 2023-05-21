@@ -31,6 +31,13 @@ class IgnorePopViewPage : MyBasePage() {
             )
         )
         TextWithSwitch(
+            TextV(text = "双开应用选择弹窗"),
+            createCustomSwitchV(
+                IgnorePopViewHooker.ACTION_XSPACE_RESOLVER_ACTIVITY_FROM_CORE,
+                IgnorePopViewHooker.IGNORE_POP_VIEW_BY_ACTION
+            )
+        )
+        TextWithSwitch(
             TextV(text = "请求权限弹窗"),
             createCustomSwitchV(
                 IgnorePopViewHooker.ACTION_REQUEST_PERMISSIONS,

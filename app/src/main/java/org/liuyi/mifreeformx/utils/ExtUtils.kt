@@ -46,3 +46,7 @@ fun Intent.isSameApp(callPackage: String) = component?.packageName == callPackag
 
 internal fun Activity.startUriString(uriString: String) =
     startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uriString)))
+
+internal fun Intent.containsFlag(flag: Int): Boolean {
+    return flags and flag != 0
+}

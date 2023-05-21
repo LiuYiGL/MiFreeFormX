@@ -9,7 +9,7 @@ import com.highcapable.yukihookapi.hook.log.loggerD
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
-import org.liuyi.mifreeformx.intent_extra.forceFreeFromMode
+import org.liuyi.mifreeformx.intent.LyIntent
 import org.liuyi.mifreeformx.proxy.systemui.AppMiniWindowManager
 import org.liuyi.mifreeformx.proxy.systemui.CentralSurfacesImpl
 import org.liuyi.mifreeformx.proxy.systemui.CommonUtil
@@ -65,8 +65,8 @@ object SystemUiHooker : LyBaseHooker() {
                                 || BlackList.TileBlacklist.contains(prefs, componentName.packageName)
                             ) return@beforeHook
                             if (prefs.get(DataConst.FORCE_CONTROL_ALL_OPEN) || isTile(intent)) {
-                                intent.forceFreeFromMode()
                                 var flag = args[5] as Int
+                                flag = flag or LyIntent.FLAG_ACTIVITY_OPEN_FREEFORM
                                 flag = flag or Intent.FLAG_ACTIVITY_NEW_TASK
                                 flag = flag or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
                                 flag = flag or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS

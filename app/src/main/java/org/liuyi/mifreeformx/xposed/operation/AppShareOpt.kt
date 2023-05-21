@@ -1,8 +1,9 @@
 package org.liuyi.mifreeformx.xposed.operation
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import org.liuyi.mifreeformx.DataConst
-import org.liuyi.mifreeformx.intent_extra.forceFreeFromMode
+import org.liuyi.mifreeformx.intent.LyIntent
 import org.liuyi.mifreeformx.xposed.hooker.FrameworkBaseHooker
 
 /**
@@ -33,9 +34,9 @@ object AppShareOpt {
         return false
     }
 
+    @SuppressLint("WrongConstant")
     internal fun handle(intent: Intent): Boolean {
-        intent.forceFreeFromMode()
-        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK or LyIntent.FLAG_ACTIVITY_OPEN_FREEFORM)
         if (FrameworkBaseHooker.prefs.get(DataConst.SHARE_TO_APP_FORCE_NEW_TASK)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
