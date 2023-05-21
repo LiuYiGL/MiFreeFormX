@@ -76,7 +76,7 @@ object SizeAndPositionHooker : LyBaseHooker() {
                             }
                         }
 
-                        val launchBounds = options.launchBounds!!
+                        val launchBounds = options.launchBounds ?: return@beforeHook
                         val optionsInjector = options.callMethodByName("getActivityOptionsInjector")
                             ?.getProxyAs<ActivityOptionsInjector>()!!
                         var scaleInOptions = optionsInjector.mFreeformScale
