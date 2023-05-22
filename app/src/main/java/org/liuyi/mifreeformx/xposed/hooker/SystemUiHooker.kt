@@ -88,7 +88,7 @@ object SystemUiHooker : LyBaseHooker() {
                 beforeHook {
                     if (prefs.get(DataConst.OPEN_NOTICE)) {
                         logD("参数：${args.asList()}")
-                        if (!prefs.get(OPEN_NOTICE_SKIP_LOCKSCREEN)) {
+                        if (prefs.get(OPEN_NOTICE_SKIP_LOCKSCREEN)) {
                             val starter = instance.getProxyAs<MiuiStatusBarNotificationActivityStarter>()
                             val mContext = starter.mContext ?: return@beforeHook
                             val keyguardManager = mContext.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
