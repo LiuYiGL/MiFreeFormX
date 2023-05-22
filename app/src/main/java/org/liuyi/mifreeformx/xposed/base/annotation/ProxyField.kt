@@ -10,5 +10,10 @@ annotation class ProxyField(
     val type: String = "",
     val isFindInSuper: Boolean = false,
     val isOnlySuperClass: Boolean = false,
-    val modifiers: Int = 0
-)
+) {
+    companion object {
+        fun ProxyField.getNameOrNull() = name.takeIf { it.isNotBlank() }?.run { trim() }
+
+        fun ProxyField.getTypeOrNull() = type.takeIf { it.isNotBlank() }?.run { trim() }
+    }
+}

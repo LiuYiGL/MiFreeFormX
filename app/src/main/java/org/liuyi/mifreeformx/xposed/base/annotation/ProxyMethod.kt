@@ -12,4 +12,14 @@ annotation class ProxyMethod(
     val returnType: String = "",
     val isFindInSuper: Boolean = false,
     val isOnlySuperClass: Boolean = false
-)
+) {
+    companion object {
+        fun ProxyMethod.getNameOrNull() = name.takeIf { it.isNotBlank() }?.run { trim() }
+
+        fun ProxyMethod.getParamCountOrNull() = paramCount.takeIf { it.isNotBlank() }?.run { trim().toInt() }
+
+        fun ProxyMethod.getParamOrNull() = param.takeIf { it.isNotBlank() }?.split(",")?.map { it.trim() }
+
+        fun ProxyMethod.getReturnTypeOrNull() = returnType.takeIf { it.isNotBlank() }?.run { trim() }
+    }
+}
