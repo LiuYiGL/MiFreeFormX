@@ -4,9 +4,11 @@ import android.app.ActivityManager
 import android.content.ComponentName
 import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
+import org.liuyi.mifreeformx.proxy.framework.ActivityRecord
 import org.liuyi.mifreeformx.proxy.framework.MiuiFreeFormActivityStack
 import org.liuyi.mifreeformx.utils.getFieldValue
 import org.liuyi.mifreeformx.utils.logD
+import org.liuyi.mifreeformx.utils.logE
 import org.liuyi.mifreeformx.xposed.base.LyBaseHooker
 
 /**
@@ -37,9 +39,23 @@ object ParallelSmallWindowHooker : LyBaseHooker() {
                         logD("找到历史taskInfo: $it")
                         val rootTask = atmService.mRootWindowContainer?.getRootTask(it.taskId) ?: return@beforeHook
                         logD("找到匹配的task: $rootTask")
-                        val topNonFinishingActivity = task.getTopNonFinishingActivity() ?: return@beforeHook
-                        logD("topNonFinishingActivity: $topNonFinishingActivity")
-                        topNonFinishingActivity.reparent(rootTask, Int.MIN_VALUE, "god let me do it")
+                        val mainComponentNames = rootTask.mChildren.orEmpty().filterNotNull()
+                            .map { it.getProxyAs<ActivityRecord>().mActivityComponent }
+                        logD("已存在的ComponentNames：$mainComponentNames")
+                        task.mChildren.orEmpty().filterNotNull().map { it.getProxyAs<ActivityRecord>() }
+                            .forEach { activityRecord ->
+                                kotlin.runCatching {
+                                    if (mainComponentNames.contains(activityRecord.mActivityComponent)) {
+                                        logD("移除ActivityRecord: $activityRecord")
+                                        activityRecord.removeFromHistory("god let me do it")
+                                    } else {
+                                        logD("移动ActivityRecord: $activityRecord")
+                                        activityRecord.reparent(rootTask, Int.MIN_VALUE, "god let me do it")
+                                    }
+                                }.onFailure { exception: Throwable -> logE(e = exception) }
+                            }
+                        // 修复最近任务丢失task
+                        atmService.mRecentTasks?.add(rootTask)
                     }
                 }
             }

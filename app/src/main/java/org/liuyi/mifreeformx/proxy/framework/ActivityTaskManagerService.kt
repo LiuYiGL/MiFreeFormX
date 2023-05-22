@@ -23,6 +23,9 @@ interface ActivityTaskManagerService : ProxyInterface {
     @get:ProxyField(name = "mRootWindowContainer")
     val mRootWindowContainer: RootWindowContainer?
 
+    @get:ProxyField(name = "mRecentTasks")
+    val mRecentTasks: RecentTasks?
+
     @ProxyMethod(name = "getTasks", paramCount = "1")
     fun getTasks(maxNum: Int): List<RunningTaskInfo?>?
 
