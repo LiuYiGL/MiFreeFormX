@@ -28,4 +28,7 @@ interface ActivityTaskManagerService : ProxyInterface {
 
     @ProxyMethod(name = "getTopTaskVisibleActivities")
     fun getTopTaskVisibleActivities(): List<Intent?>?
+
+    @ProxyMethod(name = "moveTaskToRootTask")
+    fun moveTaskToRootTask(taskId: Int, rootTaskId: Int, toTop: Boolean)
 }

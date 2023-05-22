@@ -43,10 +43,10 @@ object HookEntry : IYukiHookXposedInit {
             loadSystem(FrameworkEnhanceHooker)
             loadSystem(FrameworkBaseHooker)
             loadApp("com.android.systemui", SystemUiHooker)
-            loadApp("com.tencent.mm", WeChatHooker)
             loadSystem(SizeAndPositionHooker)
             loadSystem(FreeformOutsideMotionHooker)
             loadSystem(IgnorePopViewHooker)
+            loadSystem(ParallelSmallWindowHooker)
         }
     }
 

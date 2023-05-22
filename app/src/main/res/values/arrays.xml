@@ -3,6 +3,5 @@
     <string-array name="xposedscope">
         <item>android</item>
         <item>com.android.systemui</item>
-        <item>com.tencent.mm</item>
     </string-array>
 </resources>

@@ -65,7 +65,9 @@ object FrameworkBaseHooker : LyBaseHooker() {
                         && ParallelSmallWindowOpt.isFromSidebar(caller, intent)
                         && BlackList.ParallelFreeformWhitelist.contains(prefs, callee)
                     ) {
-                        ParallelSmallWindowOpt.handle(intent, atmService, rootWindowContainer)
+                        logD("侧边栏打开平行小窗")
+                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                        return@beforeHook
                     }
 
                     if (prefs.get(DataConst.APP_JUMP)
@@ -128,7 +130,6 @@ object FrameworkBaseHooker : LyBaseHooker() {
                     args[5] = intent
                     val realCallingPid = args[1] as Int
                     val atmService = activityTaskManagerService ?: instance.getFieldValueByName("mService").getProxyAs()
-                    rootWindowContainer = rootWindowContainer ?: atmService.mRootWindowContainer
                     val caller = args[3] as? String?
                     val context = atmService.mContext ?: return@beforeHook
                     val safeActivityOptions = args[11]?.getProxyAs<SafeActivityOptions>() ?: return@beforeHook
@@ -144,7 +145,8 @@ object FrameworkBaseHooker : LyBaseHooker() {
                         && BlackList.ParallelFreeformWhitelist.contains(prefs, intent, context)
                         && safeActivityOptions.mOriginalOptions?.getLaunchWindowingModeExt() == 5
                     ) {
-                        ParallelSmallWindowOpt.handle(intent, atmService, rootWindowContainer)
+                        logD("通知打开平行小窗")
+                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
                     }
                 }
             }
