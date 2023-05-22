@@ -55,7 +55,10 @@ object ParallelSmallWindowHooker : LyBaseHooker() {
                                 }.onFailure { exception: Throwable -> logE(e = exception) }
                             }
                         // 修复最近任务丢失task
-                        atmService.mRecentTasks?.add(rootTask)
+                        atmService.mRecentTasks?.run {
+                            add(rootTask)
+                            remove(task)
+                        }
                     }
                 }
             }

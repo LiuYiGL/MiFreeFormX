@@ -12,4 +12,7 @@ interface RecentTasks: ProxyInterface {
 
     @ProxyMethod(name = "add")
     fun add(task: Task?)
+
+    @ProxyMethod(name = "remove")
+    fun remove(task: Task?)
 }
