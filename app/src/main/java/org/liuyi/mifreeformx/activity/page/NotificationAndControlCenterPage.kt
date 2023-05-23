@@ -9,6 +9,7 @@ import org.liuyi.mifreeformx.BlackList
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.R
 import org.liuyi.mifreeformx.xposed.hooker.systemui.ClickNotificationHooker
+import org.liuyi.mifreeformx.xposed.hooker.systemui.LongClickTileHooker
 
 /**
  * @Author: Liuyi
@@ -33,6 +34,19 @@ class NotificationAndControlCenterPage : MyBasePage() {
                 }
 
                 else -> view.visibility = View.VISIBLE
+            }
+        }
+
+    private val longClickTileViewBinding =
+        GetDataBinding({
+            val mode = activity.prefs().get(LongClickTileHooker.OPEN_MODE)
+            LongClickTileHooker.OPEN_MODE_TEXT[mode]
+        }) { view, _, any ->
+            LongClickTileHooker.run {
+                when (any) {
+                    OPEN_MODE_TEXT[0], OPEN_MODE_TEXT[2] -> view.visibility = View.GONE
+                    OPEN_MODE_TEXT[1] -> view.visibility = View.VISIBLE
+                }
             }
         }
 
@@ -76,24 +90,21 @@ class NotificationAndControlCenterPage : MyBasePage() {
 
         Line()
         TitleText(textId = R.string.control_center)
-        TextSummaryWithSwitch(
+        TextSummaryWithSpinner(
             TextSummaryV(
                 textId = R.string.long_press_tile_open_window,
                 tipsId = R.string.long_press_tile_open_window_tips
             ),
-            createSwitchV(DataConst.LONG_PRESS_TILE)
-        )
-        TextSummaryWithSwitch(
-            TextSummaryV(
-                textId = R.string.force_all_tile_use_widow,
-                tipsId = R.string.force_all_tile_use_widow_tips,
-            ),
-            createSwitchV(DataConst.FORCE_CONTROL_ALL_OPEN)
+            createSpinnerV(
+                LongClickTileHooker.OPEN_MODE,
+                LongClickTileHooker.OPEN_MODE_TEXT,
+                longClickTileViewBinding.bindingSend
+            )
         )
         TextSummaryWithArrow(TextSummaryV(text = "黑名单") {
-            AppSelectPage.preList = BlackList.TileBlacklist
+            AppSelectPage.preList = LongClickTileHooker.BlackList
             showFragment("AppSelectPage")
-        })
+        }, longClickTileViewBinding.getRecv(0))
 
     }
 }

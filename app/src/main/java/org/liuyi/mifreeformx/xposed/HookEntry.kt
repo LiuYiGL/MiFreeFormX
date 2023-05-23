@@ -10,6 +10,7 @@ import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.xposed.hooker.*
 import org.liuyi.mifreeformx.xposed.hooker.SystemUiHooker
 import org.liuyi.mifreeformx.xposed.hooker.systemui.ClickNotificationHooker
+import org.liuyi.mifreeformx.xposed.hooker.systemui.LongClickTileHooker
 
 /**
  * @Author: Liuyi
@@ -49,7 +50,7 @@ object HookEntry : IYukiHookXposedInit {
                 IgnorePopViewHooker,
                 ParallelSmallWindowHooker
             )
-            loadApp("com.android.systemui", SystemUiHooker, ClickNotificationHooker)
+            loadApp("com.android.systemui", SystemUiHooker, ClickNotificationHooker, LongClickTileHooker)
         }
     }
 

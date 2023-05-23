@@ -29,51 +29,6 @@ object SystemUiHooker : LyBaseHooker() {
 
     @SuppressLint("QueryPermissionsNeeded")
     override fun onHook() {
-        var context: Context? = null
-
-        /**
-         * Hook com.android.systemui.statusbar.phone.CentralSurfacesImpl#startActivityDismissingKeyguard
-         * (android.content.Intent, boolean, boolean, boolean, com.android.systemui.plugins.ActivityStarter.Callback,
-         * int, com.android.systemui.animation.ActivityLaunchAnimator.Controller, android.os.UserHandle)
-         *
-         * 当 长按 Tile 时，或点击设置时触发方法，可在此进行判断
-         */
-        "com.android.systemui.statusbar.phone.CentralSurfacesImpl".hook {
-            injectMember {
-                method {
-                    name("startActivityDismissingKeyguard")
-                    paramCount(8)
-                }
-                beforeHook {
-                    if (prefs.get(DataConst.LONG_PRESS_TILE)) {
-                        loggerD(msg = "${args.asList()}")
-                        var intent = args[0] as? Intent?
-                        context = context ?: instance.getProxyAs<CentralSurfacesImpl>().mContext
-                        if (intent != null && context != null) {
-                            // 备份Intent，防止SB的系统用同一个实例吃遍天下
-                            args[0] = Intent(intent)
-                            intent = args[0] as Intent
-                            val topActivity = CommonUtil.proxy.getTopActivity()
-                            val componentName = intent.resolveActivity(context!!.packageManager)
-                            loggerD(msg = "$topActivity and $componentName")
-                            // 如果是顶部App 则不处理
-                            if (topActivity?.packageName == componentName.packageName
-                                || BlackList.TileBlacklist.contains(prefs, componentName.packageName)
-                            ) return@beforeHook
-                            if (prefs.get(DataConst.FORCE_CONTROL_ALL_OPEN) || isTile(intent)) {
-                                var flag = args[5] as Int
-                                flag = flag or LyIntent.FLAG_ACTIVITY_OPEN_FREEFORM
-                                flag = flag or Intent.FLAG_ACTIVITY_NEW_TASK
-                                flag = flag or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-                                flag = flag or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
-                                args[5] = flag
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
 
 
         /**
