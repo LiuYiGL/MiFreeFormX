@@ -15,7 +15,7 @@ interface BlackList {
 
     fun remove(prefs: YukiHookPrefsBridge? = null, item: String)
 
-    fun contains(prefs: YukiHookPrefsBridge? = null, item: String): Boolean
+    fun contains(prefs: YukiHookPrefsBridge? = null, item: String?): Boolean
 
     fun size(prefs: YukiHookPrefsBridge? = null): Int
 

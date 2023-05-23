@@ -9,6 +9,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.xposed.hooker.*
 import org.liuyi.mifreeformx.xposed.hooker.SystemUiHooker
+import org.liuyi.mifreeformx.xposed.hooker.systemui.ClickNotificationHooker
 
 /**
  * @Author: Liuyi
@@ -40,13 +41,15 @@ object HookEntry : IYukiHookXposedInit {
                 }
             }
             loggerI(msg = "Starting Hook！！")
-            loadSystem(FrameworkEnhanceHooker)
-            loadSystem(FrameworkBaseHooker)
-            loadApp("com.android.systemui", SystemUiHooker)
-            loadSystem(SizeAndPositionHooker)
-            loadSystem(FreeformOutsideMotionHooker)
-            loadSystem(IgnorePopViewHooker)
-            loadSystem(ParallelSmallWindowHooker)
+            loadSystem(
+                FrameworkBaseHooker,
+                FrameworkEnhanceHooker,
+                SizeAndPositionHooker,
+                FreeformOutsideMotionHooker,
+                IgnorePopViewHooker,
+                ParallelSmallWindowHooker
+            )
+            loadApp("com.android.systemui", SystemUiHooker, ClickNotificationHooker)
         }
     }
 

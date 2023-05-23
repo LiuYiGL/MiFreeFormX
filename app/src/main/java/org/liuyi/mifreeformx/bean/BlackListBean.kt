@@ -37,7 +37,8 @@ open class BlackListBean(private val prefsData: PrefsData<Set<String>>? = null) 
         }
     }
 
-    override fun contains(prefs: YukiHookPrefsBridge?, item: String): Boolean {
+    override fun contains(prefs: YukiHookPrefsBridge?, item: String?): Boolean {
+        item ?: return false
         return prefsData?.let { prefs?.get(it)?.contains(item) } ?: false
     }
 

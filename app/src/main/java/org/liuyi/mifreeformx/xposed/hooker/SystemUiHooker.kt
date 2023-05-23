@@ -26,10 +26,6 @@ import org.liuyi.mifreeformx.xposed.base.LyBaseHooker
  */
 object SystemUiHooker : LyBaseHooker() {
 
-    /**
-     * 单击通知小窗打开时跳过锁屏状态
-     */
-    val OPEN_NOTICE_SKIP_LOCKSCREEN = PrefsData("open_notice_skip_lockscreen", true)
 
     @SuppressLint("QueryPermissionsNeeded")
     override fun onHook() {
@@ -78,48 +74,6 @@ object SystemUiHooker : LyBaseHooker() {
             }
         }
 
-        /**
-         * Hook com.android.systemui.statusbar.phone.MiuiStatusBarNotificationActivityStarter#startNotificationIntent
-         * 当点击通知时会触发这个方法，可从第一个参数 获取PendingIntent 然后反射getIntent 获得Intent
-         */
-        "com.android.systemui.statusbar.phone.MiuiStatusBarNotificationActivityStarter".hook {
-            injectMember {
-                method { name("startNotificationIntent") }
-                beforeHook {
-                    if (prefs.get(DataConst.OPEN_NOTICE)) {
-                        logD("参数：${args.asList()}")
-                        if (prefs.get(OPEN_NOTICE_SKIP_LOCKSCREEN)) {
-                            val starter = instance.getProxyAs<MiuiStatusBarNotificationActivityStarter>()
-                            val mContext = starter.mContext ?: return@beforeHook
-                            val keyguardManager = mContext.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
-                            val isKeyguardLocked = keyguardManager.isKeyguardLocked
-                            logD("锁屏状态：$isKeyguardLocked")
-                            if (isKeyguardLocked) {
-                                return@beforeHook
-                            }
-                        }
-                        // 加载类
-                        val appMiniWindowManagerClass =
-                            "com.android.systemui.statusbar.notification.policy.AppMiniWindowManager".toClass()
-                        // 逻辑开始
-                        val appMiniWindowManager =
-                            Dependency.Proxy.get(appMiniWindowManagerClass).getProxyAs<AppMiniWindowManager>()
-
-                        args[3]?.getProxyAs<MiuiExpandableNotificationRow>()?.let {
-                            val targetPkg = it.getMiniWindowTargetPkg()
-                            val pendingIntent = args[0] as PendingIntent
-                            if (!appMiniWindowManager.canNotificationSlide(targetPkg, pendingIntent)) {
-                                logD("当前通知不可下滑，取消操作")
-                                return@beforeHook
-                            }
-                            logD("使用小窗打开通知")
-                            appMiniWindowManager.launchMiniWindowActivity(targetPkg, pendingIntent)
-                            resultNull()
-                        }
-                    }
-                }
-            }
-        }
 
 
         /**
