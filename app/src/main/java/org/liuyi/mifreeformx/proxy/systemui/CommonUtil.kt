@@ -14,7 +14,7 @@ import org.liuyi.mifreeformx.xposed.hooker.SystemUiHooker.toClass
 interface CommonUtil : ProxyInterface {
 
     companion object {
-        val StaticProxy by lazy { "android.util.MiuiMultiWindowUtils".toClass().getProxyAs<CommonUtil>() }
+        val StaticProxy by lazy { "com.miui.systemui.util.CommonUtil".toClass().getProxyAs<CommonUtil>() }
     }
 
     @ProxyMethod(name = "getTopActivity")
