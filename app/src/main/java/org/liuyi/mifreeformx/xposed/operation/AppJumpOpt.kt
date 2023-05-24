@@ -2,7 +2,9 @@ package org.liuyi.mifreeformx.xposed.operation
 
 import android.content.Context
 import android.content.Intent
-import com.highcapable.yukihookapi.hook.log.loggerD
+import com.highcapable.yukihookapi.hook.param.HookParam
+import org.liuyi.mifreeformx.utils.containsFlag
+import org.liuyi.mifreeformx.utils.logD
 
 /**
  * @Author: Liuyi
@@ -12,22 +14,26 @@ import com.highcapable.yukihookapi.hook.log.loggerD
 object AppJumpOpt {
 
     // 应用间跳转
-    fun isAppJump(callingThread: Any?, callingPackage: String?, intent: Intent, context: Context): Boolean {
+    fun HookParam.isAppJump(callingThread: Any?, callingPackage: String?, intent: Intent, context: Context): Boolean {
+        callingPackage ?: return false
         // 排除如，系统后台进入，获取桌面进入
         if (intent.flags and Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED != 0) return false
-        if (intent.flags and Intent.FLAG_ACTIVITY_NEW_TASK != 0) {
-            // 包含 new 标签
-            val componentName = intent.component ?: intent.resolveActivity(context.packageManager)
-            loggerD(msg = "$componentName")
+
+        val targetActivity = intent.component ?: intent.resolveActivity(context.packageManager)
+        logD("isAppJump: Target: $targetActivity")
+        val isSameApp = callingPackage == targetActivity.packageName
+        if (isSameApp) return false
+
+        // 浏览器相关
+        if (intent.action == Intent.ACTION_VIEW && intent.hasCategory(Intent.CATEGORY_BROWSABLE)) {
+            return true
+        }
+
+        // 修复微信分享回调导致源activity使用小窗
+        if (intent.containsFlag(Intent.FLAG_ACTIVITY_NEW_TASK)) {
             // 修复微信分享回调导致源activity使用小窗
-            if (componentName.className.endsWith(".wxapi.WXEntryActivity")) return false
-            componentName?.packageName?.let { name ->
-                loggerD(msg = name)
-                if (callingPackage != name) {
-                    // 判断为应用间跳转
-                    return true
-                }
-            }
+            if (targetActivity.className.endsWith(".wxapi.WXEntryActivity")) return false
+            return true
         }
         return false
     }

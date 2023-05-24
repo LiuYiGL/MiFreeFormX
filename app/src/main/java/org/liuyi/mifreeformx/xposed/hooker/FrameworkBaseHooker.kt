@@ -12,7 +12,7 @@ import org.liuyi.mifreeformx.proxy.framework.RootWindowContainer
 import org.liuyi.mifreeformx.proxy.framework.SafeActivityOptions
 import org.liuyi.mifreeformx.utils.*
 import org.liuyi.mifreeformx.xposed.base.LyBaseHooker
-import org.liuyi.mifreeformx.xposed.operation.AppJumpOpt
+import org.liuyi.mifreeformx.xposed.operation.AppJumpOpt.isAppJump
 import org.liuyi.mifreeformx.xposed.operation.AppShareOpt
 import org.liuyi.mifreeformx.xposed.operation.ParallelSmallWindowOpt
 
@@ -71,7 +71,7 @@ object FrameworkBaseHooker : LyBaseHooker() {
                     }
 
                     if (prefs.get(DataConst.APP_JUMP)
-                        && AppJumpOpt.isAppJump(args[0], caller, intent, context)
+                        && isAppJump(args[0], caller, intent, context)
                         && caller != null
                         && !BlackList.AppJumpSourceBlacklist.contains(prefs, caller)
                         && !BlackList.AppJumpTargetBlacklist.contains(prefs, callee)
