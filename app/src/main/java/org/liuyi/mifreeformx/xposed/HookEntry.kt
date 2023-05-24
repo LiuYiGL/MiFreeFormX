@@ -9,6 +9,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.xposed.hooker.*
 import org.liuyi.mifreeformx.xposed.hooker.SystemUiHooker
+import org.liuyi.mifreeformx.xposed.hooker.android.PinnedWinRunHooker
 import org.liuyi.mifreeformx.xposed.hooker.systemui.ClickNotificationHooker
 import org.liuyi.mifreeformx.xposed.hooker.systemui.LongClickTileHooker
 
@@ -48,7 +49,8 @@ object HookEntry : IYukiHookXposedInit {
                 SizeAndPositionHooker,
                 FreeformOutsideMotionHooker,
                 IgnorePopViewHooker,
-                ParallelSmallWindowHooker
+                ParallelSmallWindowHooker,
+                PinnedWinRunHooker
             )
             loadApp("com.android.systemui", SystemUiHooker, ClickNotificationHooker, LongClickTileHooker)
         }

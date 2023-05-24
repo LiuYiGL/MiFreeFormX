@@ -42,6 +42,12 @@ interface MiuiFreeFormActivityStack : ProxyInterface {
     @ProxyMethod(name = "inPinMode")
     fun inPinMode(): Boolean
 
+    @ProxyMethod(name = "setInPinMode")
+    fun setInPinMode(inPinMode: Boolean)
+
+    @ProxyMethod(name = "getStackPackageName")
+    fun getStackPackageName(): String?
+
     @ProxyMethod(name = "isInFreeFormMode")
     fun isInFreeFormMode(): Boolean
 }

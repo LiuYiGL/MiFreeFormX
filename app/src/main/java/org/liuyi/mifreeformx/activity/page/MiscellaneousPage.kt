@@ -9,7 +9,7 @@ import com.highcapable.yukihookapi.hook.factory.prefs
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.R
 import org.liuyi.mifreeformx.xposed.hooker.FreeformOutsideMotionHooker
-import org.liuyi.mifreeformx.xposed.hooker.SizeAndPositionHooker
+import org.liuyi.mifreeformx.xposed.hooker.android.PinnedWinRunHooker
 
 /**
  * @Author: Liuyi
@@ -26,6 +26,16 @@ class MiscellaneousPage : MyBasePage() {
     }) { view, _, data ->
         when (data) {
             FreeformOutsideMotionHooker.FREEFORM_OUTSIDE_MOTION_MODE_STRING[0] -> view.visibility = View.GONE
+            else -> view.visibility = View.VISIBLE
+        }
+    }
+
+    private val pinnedWinAlwaysRunViewBinding = GetDataBinding({
+        val index = activity.prefs().get(PinnedWinRunHooker.OPEN_MODE)
+        PinnedWinRunHooker.OPEN_MODE_TEXT[index]
+    }) { view, _, any ->
+        when (any) {
+            PinnedWinRunHooker.OPEN_MODE_TEXT[0], PinnedWinRunHooker.OPEN_MODE_TEXT[1] -> view.visibility = View.GONE
             else -> view.visibility = View.VISIBLE
         }
     }
@@ -64,5 +74,20 @@ class MiscellaneousPage : MyBasePage() {
             ),
             freeformOutsideViewBinding.getRecv(0)
         )
+
+        Line()
+        TitleText("贴边小窗")
+        TextSummaryWithSpinner(
+            TextSummaryV("禁止暂停应用"),
+            createSpinnerV(
+                PinnedWinRunHooker.OPEN_MODE,
+                PinnedWinRunHooker.OPEN_MODE_TEXT,
+                pinnedWinAlwaysRunViewBinding.bindingSend
+            )
+        )
+        TextSA("选择应用", dataBindingRecv = pinnedWinAlwaysRunViewBinding.getRecv(0), onClickListener = {
+            AppSelectPage.preList = PinnedWinRunHooker.SelectedAppsList
+            showFragment("AppSelectPage")
+        })
     }
 }
