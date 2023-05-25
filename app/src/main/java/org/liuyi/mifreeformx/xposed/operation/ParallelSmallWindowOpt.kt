@@ -2,9 +2,12 @@ package org.liuyi.mifreeformx.xposed.operation
 
 import android.content.Intent
 import com.highcapable.yukihookapi.hook.log.loggerD
+import com.highcapable.yukihookapi.hook.param.HookParam
 import org.liuyi.mifreeformx.proxy.framework.ActivityTaskManagerService
 import org.liuyi.mifreeformx.proxy.framework.RootWindowContainer
+import org.liuyi.mifreeformx.utils.getFieldValueByName
 import org.liuyi.mifreeformx.utils.isSameApp
+import org.liuyi.mifreeformx.utils.logD
 
 /**
  * @Author: Liuyi
@@ -48,5 +51,15 @@ object ParallelSmallWindowOpt {
             container?.anyTaskForId(it.taskId)?.moveToFront("god let me do it")
         } ?: intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
         return false
+    }
+
+    internal fun HookParam.parallelSmallWindowOpt(intent: Intent, callee: String, atmService: ActivityTaskManagerService) {
+        val taskInfos = atmService.getAllRootTaskInfos().orEmpty().filterNotNull()
+            .filter { it.getFieldValueByName("visible") as Boolean }
+        val isExistsSameApp = taskInfos.any { taskInfo -> taskInfo.baseActivity?.packageName == callee }
+        if (isExistsSameApp) {
+            logD("存在相同的可视应用：$callee")
+            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+        }
     }
 }

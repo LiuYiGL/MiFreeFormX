@@ -15,6 +15,7 @@ import org.liuyi.mifreeformx.xposed.base.LyBaseHooker
 import org.liuyi.mifreeformx.xposed.operation.AppJumpOpt.isAppJump
 import org.liuyi.mifreeformx.xposed.operation.AppShareOpt
 import org.liuyi.mifreeformx.xposed.operation.ParallelSmallWindowOpt
+import org.liuyi.mifreeformx.xposed.operation.ParallelSmallWindowOpt.parallelSmallWindowOpt
 
 /**
  * @Author: Liuyi
@@ -66,7 +67,7 @@ object FrameworkBaseHooker : LyBaseHooker() {
                         && BlackList.ParallelFreeformWhitelist.contains(prefs, callee)
                     ) {
                         logD("侧边栏打开平行小窗")
-                        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+                        parallelSmallWindowOpt(intent, callee, atmService)
                         return@beforeHook
                     }
 

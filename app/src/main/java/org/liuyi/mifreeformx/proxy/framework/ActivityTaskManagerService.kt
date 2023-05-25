@@ -1,6 +1,7 @@
 package org.liuyi.mifreeformx.proxy.framework
 
 import android.app.ActivityManager.RunningTaskInfo
+import android.app.TaskInfo
 import android.content.Context
 import android.content.Intent
 import org.liuyi.mifreeformx.xposed.base.annotation.ProxyField
@@ -31,6 +32,9 @@ interface ActivityTaskManagerService : ProxyInterface {
 
     @ProxyMethod(name = "getTopTaskVisibleActivities")
     fun getTopTaskVisibleActivities(): List<Intent?>?
+
+    @ProxyMethod(name = "getAllRootTaskInfos")
+    fun getAllRootTaskInfos(): List<TaskInfo?>?
 
     @ProxyMethod(name = "moveTaskToRootTask")
     fun moveTaskToRootTask(taskId: Int, rootTaskId: Int, toTop: Boolean)
