@@ -23,7 +23,8 @@ object BlackList {
                     "com.android.providers.media.module",
                     "com.miui.securitycenter",
                     "com.miui.securityadd",
-                    "com.android.systemui"
+                    "com.android.systemui",
+                    "com.xiaomi.mirror"         // 小米妙享
                 )
             )
         )

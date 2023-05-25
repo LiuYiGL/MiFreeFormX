@@ -18,6 +18,8 @@ object AppJumpOpt {
         callingPackage ?: return false
         // 排除如，系统后台进入，获取桌面进入
         if (intent.flags and Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED != 0) return false
+        // 排除小米妙享的文件管理和笔记
+        if (intent.action == "miui.intent.action.OUTBOUND_APP") return false
 
         val targetActivity = intent.component ?: intent.resolveActivity(context.packageManager)
         logD("isAppJump: Target: $targetActivity")

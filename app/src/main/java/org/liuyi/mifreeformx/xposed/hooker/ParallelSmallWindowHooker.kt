@@ -25,7 +25,8 @@ object ParallelSmallWindowHooker : LyBaseHooker() {
                     if (!prefs.get(DataConst.PARALLEL_MULTI_WINDOW_PLUS)) return@beforeHook
                     val task = instance.getProxyAs<MiuiFreeFormActivityStack>().mTask ?: return@beforeHook
                     logD("task: $task")
-                    if (!BlackList.ParallelFreeformWhitelist.contains(prefs, task.getPackageName()!!)) return@beforeHook
+                    val appPackage = task.getPackageName() ?: return@beforeHook
+                    if (!BlackList.ParallelFreeformWhitelist.contains(prefs, appPackage)) return@beforeHook
 
                     val atmService = task.mAtmService!!
                     val runningTaskInfos = atmService.getTasks(Int.MAX_VALUE).orEmpty().filterNotNull()
