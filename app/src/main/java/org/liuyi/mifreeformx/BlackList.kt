@@ -49,7 +49,12 @@ object BlackList {
     object AppShareTargetBlacklist : BlackListBean(
         PrefsData(
             "app_share_target_blacklist",
-            setOf("com.android.camera", "com.miui.tsmclient", "com.lbe.security.miui")
+            setOf(
+                "com.android.camera",
+                "com.miui.tsmclient",
+                "com.lbe.security.miui",
+                "com.miui.mediaeditor"
+            )
         )
     )
 
