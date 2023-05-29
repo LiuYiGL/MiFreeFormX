@@ -1,5 +1,6 @@
 package org.liuyi.mifreeformx.xposed
 
+import android.os.Build
 import com.highcapable.yukihookapi.YukiHookAPI
 import com.highcapable.yukihookapi.annotation.xposed.InjectYukiHookWithXposed
 import com.highcapable.yukihookapi.hook.factory.configs
@@ -9,6 +10,7 @@ import com.highcapable.yukihookapi.hook.xposed.proxy.IYukiHookXposedInit
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.xposed.hooker.*
 import org.liuyi.mifreeformx.xposed.hooker.SystemUiHooker
+import org.liuyi.mifreeformx.xposed.hooker.android.FreeformOutsideMotionHookerForS
 import org.liuyi.mifreeformx.xposed.hooker.android.PinnedWinRunHooker
 import org.liuyi.mifreeformx.xposed.hooker.systemui.ClickNotificationHooker
 import org.liuyi.mifreeformx.xposed.hooker.systemui.LongClickTileHooker
@@ -47,11 +49,18 @@ object HookEntry : IYukiHookXposedInit {
                 FrameworkBaseHooker,
                 FrameworkEnhanceHooker,
                 SizeAndPositionHooker,
-                FreeformOutsideMotionHooker,
                 IgnorePopViewHooker,
-                ParallelSmallWindowHooker,
-                PinnedWinRunHooker
+                ParallelSmallWindowHooker
             )
+            when {
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                    loadSystem(PinnedWinRunHooker, FreeformOutsideMotionHooker)
+                }
+
+                else -> {
+                    loadSystem(FreeformOutsideMotionHookerForS)
+                }
+            }
             loadApp("com.android.systemui", SystemUiHooker, ClickNotificationHooker, LongClickTileHooker)
         }
     }

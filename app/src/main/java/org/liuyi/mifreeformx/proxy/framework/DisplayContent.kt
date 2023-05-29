@@ -16,16 +16,16 @@ interface DisplayContent : ProxyInterface {
     @get:ProxyField(name = "mDisplayPolicy")
     val mDisplayPolicy: DisplayPolicy?
 
-    @get:ProxyField(name = "mInitialDisplayCutout")
-    @set:ProxyField(name = "mInitialDisplayCutout")
+    @get:ProxyField(name = "mInitialDisplayCutout", isFindInSuper = true)
+    @set:ProxyField(name = "mInitialDisplayCutout", isFindInSuper = true)
     var mInitialDisplayCutout: DisplayCutout?
 
     @get:ProxyField(name = "mRealDisplayMetrics")
     val mRealDisplayMetrics: DisplayMetrics?
 
-    @get:ProxyField(name = "mDisplayMetrics")
+    @get:ProxyField(name = "mDisplayMetrics", isFindInSuper = true)
     val mDisplayMetrics: DisplayMetrics?
 
-    @ProxyMethod(name = "getDisplayId")
+    @ProxyMethod(name = "getDisplayId", isFindInSuper = true)
     fun getDisplayId(): Int
 }

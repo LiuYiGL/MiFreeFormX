@@ -1,8 +1,10 @@
 package org.liuyi.mifreeformx.xposed.hooker
 
 import android.content.Intent
+import android.os.Build
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.liuyi.mifreeformx.DataConst
+import org.liuyi.mifreeformx.xposed.hooker.systemui.LongClickTileHooker
 
 /**
  * @Author: Liuyi
@@ -20,9 +22,7 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
             injectMember {
                 method { name { it.startsWith("getFreeformBlackList") } }
                 afterHook {
-                    if (prefs.get(DataConst.DISABLE_FREEFORM_BLACKLIST)
-                        || prefs.get(DataConst.LONG_PRESS_TILE)
-                    ) {
+                    if (prefs.get(DataConst.DISABLE_FREEFORM_BLACKLIST) || prefs.get(LongClickTileHooker.LONG_PRESS_TILE)) {
                         (result as MutableList<*>).clear()
                     }
                 }
@@ -30,34 +30,12 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
         }
 
 
-        "com.android.server.wm.Task".hook {
-            injectMember {
-                method { name("isResizeable") }
-                beforeHook {
-                    if (prefs.get(DataConst.FORCE_ACTIVITY_RESIZEABLE)) {
-                        resultTrue()
-                    }
-                }
-            }.by { prefs.get(DataConst.FORCE_ACTIVITY_RESIZEABLE) }
-        }
-
-        "android.util.MiuiMultiWindowUtils".hook {
-            injectMember {
-                method { name("supportFreeform") }
-                beforeHook {
-                    if (prefs.get(DataConst.FORCE_ACTIVITY_RESIZEABLE)) {
-                        resultTrue()
-                    }
-                }
-            }
-        }
-
         /**
          * 去除小窗数量限制
          */
         "com.android.server.wm.MiuiFreeFormStackDisplayStrategy".hook {
             injectMember {
-                method { name ("getMaxMiuiFreeFormStackCount") }
+                method { name("getMaxMiuiFreeFormStackCount") }
                 beforeHook {
                     if (prefs.get(DataConst.LIFT_WINDOW_NUM_LIMIT)) {
                         result = 128
@@ -68,12 +46,14 @@ object FrameworkEnhanceHooker : YukiBaseHooker() {
         /**
          * 去除小窗数量限制
          */
-        "com.android.server.wm.MiuiFreeFormManagerService".hook {
-            injectMember {
-                method { name("getCurrentUnReplaceFreeform") }
-                beforeHook {
-                    if (prefs.get(DataConst.LIFT_WINDOW_NUM_LIMIT)) {
-                        result = mutableListOf<Any>()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            "com.android.server.wm.MiuiFreeFormManagerService".hook {
+                injectMember {
+                    method { name("getCurrentUnReplaceFreeform") }
+                    beforeHook {
+                        if (prefs.get(DataConst.LIFT_WINDOW_NUM_LIMIT)) {
+                            result = mutableListOf<Any>()
+                        }
                     }
                 }
             }

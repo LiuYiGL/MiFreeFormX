@@ -1,6 +1,7 @@
 package org.liuyi.mifreeformx.activity.page
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.view.View
 import cn.fkj233.ui.activity.annotation.BMPage
 import cn.fkj233.ui.activity.view.TextSummaryV
@@ -9,6 +10,7 @@ import com.highcapable.yukihookapi.hook.factory.prefs
 import org.liuyi.mifreeformx.DataConst
 import org.liuyi.mifreeformx.R
 import org.liuyi.mifreeformx.xposed.hooker.FreeformOutsideMotionHooker
+import org.liuyi.mifreeformx.xposed.hooker.android.FreeformOutsideMotionHookerForS
 import org.liuyi.mifreeformx.xposed.hooker.android.PinnedWinRunHooker
 
 /**
@@ -69,25 +71,29 @@ class MiscellaneousPage : MyBasePage() {
                 textId = R.string.freeform_outside_motion_action_mode
             ),
             createSpinnerV(
-                FreeformOutsideMotionHooker.CLICK_FREEFORM_OUTSIDE_ACTION_TYPE,
-                FreeformOutsideMotionHooker.CLICK_FREEFORM_OUTSIDE_ACTION_TYPE_STRING
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) FreeformOutsideMotionHooker.CLICK_FREEFORM_OUTSIDE_ACTION_TYPE
+                else FreeformOutsideMotionHookerForS.ACTION_MODE,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) FreeformOutsideMotionHooker.CLICK_FREEFORM_OUTSIDE_ACTION_TYPE_STRING
+                else FreeformOutsideMotionHookerForS.ACTION_MODE_TEXT,
             ),
             freeformOutsideViewBinding.getRecv(0)
         )
 
         Line()
-        TitleText("贴边小窗")
-        TextSummaryWithSpinner(
-            TextSummaryV("禁止暂停应用"),
-            createSpinnerV(
-                PinnedWinRunHooker.OPEN_MODE,
-                PinnedWinRunHooker.OPEN_MODE_TEXT,
-                pinnedWinAlwaysRunViewBinding.bindingSend
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            TitleText("贴边小窗")
+            TextSummaryWithSpinner(
+                TextSummaryV("禁止暂停应用"),
+                createSpinnerV(
+                    PinnedWinRunHooker.OPEN_MODE,
+                    PinnedWinRunHooker.OPEN_MODE_TEXT,
+                    pinnedWinAlwaysRunViewBinding.bindingSend
+                )
             )
-        )
-        TextSA("选择应用", dataBindingRecv = pinnedWinAlwaysRunViewBinding.getRecv(0), onClickListener = {
-            AppSelectPage.preList = PinnedWinRunHooker.SelectedAppsList
-            showFragment("AppSelectPage")
-        })
+            TextSA("选择应用", dataBindingRecv = pinnedWinAlwaysRunViewBinding.getRecv(0), onClickListener = {
+                AppSelectPage.preList = PinnedWinRunHooker.SelectedAppsList
+                showFragment("AppSelectPage")
+            })
+        }
     }
 }

@@ -38,16 +38,8 @@ class NotificationAndControlCenterPage : MyBasePage() {
         }
 
     private val longClickTileViewBinding =
-        GetDataBinding({
-            val mode = activity.prefs().get(LongClickTileHooker.OPEN_MODE)
-            LongClickTileHooker.OPEN_MODE_TEXT[mode]
-        }) { view, _, any ->
-            LongClickTileHooker.run {
-                when (any) {
-                    OPEN_MODE_TEXT[0], OPEN_MODE_TEXT[2] -> view.visibility = View.GONE
-                    OPEN_MODE_TEXT[1] -> view.visibility = View.VISIBLE
-                }
-            }
+        GetDataBinding({ activity.prefs().get(LongClickTileHooker.LONG_PRESS_TILE) }) { view, _, any ->
+            view.visibility = if (any == true) View.VISIBLE else View.GONE
         }
 
     override fun onCreate() {
@@ -90,16 +82,12 @@ class NotificationAndControlCenterPage : MyBasePage() {
 
         Line()
         TitleText(textId = R.string.control_center)
-        TextSummaryWithSpinner(
+        TextSummaryWithSwitch(
             TextSummaryV(
                 textId = R.string.long_press_tile_open_window,
                 tipsId = R.string.long_press_tile_open_window_tips
             ),
-            createSpinnerV(
-                LongClickTileHooker.OPEN_MODE,
-                LongClickTileHooker.OPEN_MODE_TEXT,
-                longClickTileViewBinding.bindingSend
-            )
+            createSwitchV(LongClickTileHooker.LONG_PRESS_TILE, longClickTileViewBinding.bindingSend)
         )
         TextSummaryWithArrow(TextSummaryV(text = "黑名单") {
             AppSelectPage.preList = LongClickTileHooker.BlackList
