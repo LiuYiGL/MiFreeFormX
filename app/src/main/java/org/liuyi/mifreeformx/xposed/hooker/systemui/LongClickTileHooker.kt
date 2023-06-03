@@ -4,12 +4,17 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import com.highcapable.yukihookapi.annotation.CauseProblemsApi
+import com.highcapable.yukihookapi.hook.xposed.channel.data.ChannelData
 import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 import org.liuyi.mifreeformx.bean.BlackListBean
+import org.liuyi.mifreeformx.bean.TileInfo
 import org.liuyi.mifreeformx.intent.LyIntent
 import org.liuyi.mifreeformx.proxy.systemui.CommonUtil
+import org.liuyi.mifreeformx.utils.callMethod
 import org.liuyi.mifreeformx.utils.callMethodByName
 import org.liuyi.mifreeformx.utils.containsFlag
+import org.liuyi.mifreeformx.utils.getFieldValueByName
 import org.liuyi.mifreeformx.utils.getFieldValueOrNull
 import org.liuyi.mifreeformx.utils.logD
 import org.liuyi.mifreeformx.xposed.base.LyBaseHooker
@@ -25,6 +30,14 @@ object LongClickTileHooker : LyBaseHooker() {
     val OPEN_MODE = PrefsData("long_click_tile_open_mode", 0)
     val OPEN_MODE_TEXT = listOf("关闭", "开启")
 
+    const val DATA_CHANNEL_GET_LIST_KEY = "LongClickTileHooker_GET_LIST"
+
+    val DATA_CHANNEL_LIST = ChannelData("LongClickTileHooker_SEND_LIST", arrayOf<TileInfo>())
+
+    object ComponentList : BlackListBean(
+        PrefsData("tile_component_list", setOf())
+    )
+
     /**
      * 长按Tile 小窗打开
      */
@@ -37,6 +50,7 @@ object LongClickTileHooker : LyBaseHooker() {
         )
     )
 
+    @OptIn(CauseProblemsApi::class)
     @SuppressLint("WrongConstant")
     override fun onHook() {
 
@@ -72,9 +86,39 @@ object LongClickTileHooker : LyBaseHooker() {
                             logD("顶部：$topActivity, 当前：$componentName")
                             // 如果是顶部App 则不处理
                             if (topActivity?.packageName == componentName.packageName) return@beforeHook
-                            if (BlackList.contains(prefs, componentName.packageName)) return@beforeHook
+                            if (ComponentList.contains(prefs, componentName.flattenToShortString())) return@beforeHook
                         }
-                        intent.addFlags(LyIntent.FLAG_ACTIVITY_OPEN_FREEFORM)
+                        args[0] = Intent(intent).addFlags(LyIntent.FLAG_ACTIVITY_OPEN_FREEFORM)
+                    }
+                }
+            }
+        }
+
+        "com.android.systemui.qs.QSTileHost".hook {
+            injectMember {
+                allConstructors()
+                afterHook {
+                    dataChannel.wait<String>(DATA_CHANNEL_GET_LIST_KEY) {
+                        val mContext = instance.getFieldValueByName("mContext") as Context
+                        val tiles = instance.callMethodByName("getTiles") as Collection<*>
+                        val tileInfos = tiles.filterNotNull().mapNotNull {
+                            val tileLabel = it.callMethod {
+                                name = "getTileLabel"
+                                superClass()
+                            } as CharSequence?
+                            val intent = it.callMethod {
+                                name = "getLongClickIntent"
+                                superClass()
+                            } as Intent?
+                            val componentName = intent?.resolveActivity(mContext.packageManager)
+                            if (tileLabel != null && componentName != null) {
+                                componentName.run {
+                                    TileInfo(tileLabel.toString(), componentName.flattenToShortString())
+                                }
+                            } else null
+
+                        }
+                        dataChannel.allowSendTooLargeData().put(DATA_CHANNEL_LIST, tileInfos.toTypedArray())
                     }
                 }
             }

@@ -90,8 +90,7 @@ class NotificationAndControlCenterPage : MyBasePage() {
             createSwitchV(LongClickTileHooker.LONG_PRESS_TILE, longClickTileViewBinding.bindingSend)
         )
         TextSummaryWithArrow(TextSummaryV(text = "黑名单") {
-            AppSelectPage.preList = LongClickTileHooker.BlackList
-            showFragment("AppSelectPage")
+            showFragment("TileSelectPage")
         }, longClickTileViewBinding.getRecv(0))
 
     }

@@ -18,6 +18,7 @@ import org.liuyi.mifreeformx.activity.page.MiscellaneousPage
 import org.liuyi.mifreeformx.activity.page.NotificationAndControlCenterPage
 import org.liuyi.mifreeformx.activity.page.ParallelSmallWindowPage
 import org.liuyi.mifreeformx.activity.page.SizeAndPositionPage
+import org.liuyi.mifreeformx.activity.page.TileSelectPage
 
 /**
  * @Author: Liuyi
@@ -38,6 +39,7 @@ class MainActivity : MIUIActivity() {
         registerPage(DonatePage::class.java)
         registerPage(SizeAndPositionPage::class.java)
         registerPage(IgnorePopViewPage::class.java)
+        registerPage(TileSelectPage::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

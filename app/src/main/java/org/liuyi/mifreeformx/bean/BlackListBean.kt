@@ -14,8 +14,8 @@ import com.highcapable.yukihookapi.hook.xposed.prefs.data.PrefsData
 open class BlackListBean(private val prefsData: PrefsData<Set<String>>? = null) : BlackList {
 
 
-    override fun add(prefs: YukiHookPrefsBridge?, item: String) {
-        if (prefs != null && prefsData != null) {
+    override fun add(prefs: YukiHookPrefsBridge?, item: String?) {
+        if (prefs != null && prefsData != null && item != null) {
             val mutableSet = prefs.get(prefsData).toMutableSet()
             mutableSet.add(item)
             prefs.edit { put(prefsData, mutableSet) }
@@ -29,7 +29,7 @@ open class BlackListBean(private val prefsData: PrefsData<Set<String>>? = null) 
         }
     }
 
-    override fun remove(prefs: YukiHookPrefsBridge?, item: String) {
+    override fun remove(prefs: YukiHookPrefsBridge?, item: String?) {
         if (prefs != null && prefsData != null) {
             val mutableSet = prefs.get(prefsData).toMutableSet()
             mutableSet.remove(item)
